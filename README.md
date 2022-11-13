@@ -2,13 +2,15 @@
 
 View Mastodon timelines, search hashtags, find interesting people, and check server stats.
 
+https://user-images.githubusercontent.com/46509/201509809-7decc15a-79f4-4e6a-b782-51b6887fe04f.mp4
+
+## Sample snapshots
 
 - [Snapshot of a home timeline](https://cloud.steampipe.io/user/judell/workspace/personal/snapshot/snap_cdo8t4asl05te46lsju0_chb2x482em9c12fqu260s55a)
 
-- [Snapshot of a hashtag search](https://cloud.steampipe.io/user/judell/workspace/personal/snapshot/snap_cdo8thisl05te46lsk00_38s9yo86632vz6pvjgazu1q4x)
-
 - [Snapshot of a server stats report](https://cloud.steampipe.io/user/judell/workspace/personal/snapshot/snap_cdo8t8asl05te46lsjv0_hht2qectw8vc7azgi13nw2zo)
 
+- [Snapshot of a hashtag search](https://cloud.steampipe.io/user/judell/workspace/personal/snapshot/snap_cdo901asl05te46lsk1g_2ln9wz1zsvjw25yu0efqx7n66)
 
 ## Overview
 
@@ -17,7 +19,7 @@ Mastodon dashboards answer questions like:
 - What are recent tweets on my home timeline?
 - On the local timeline?
 - On the federated timeline?
-- Which toots are hashtagged `science`
+- Which toots are hashtagged `science`?
 - How many toots, logins, and registrations on my server in recent weeks?
 
 ## Getting started
@@ -53,7 +55,7 @@ The dashboard launches at https://localhost:9194.
 
 ### Credentials
 
-This mod uses the credentials configured in the [Steampipe Mastdon  plugin](https://github.com/turbot/steampipe-plugin-mastodon).
+This mod uses the credentials configured in the [Steampipe Mastodon  plugin](https://github.com/turbot/steampipe-plugin-mastodon).
 
 ### Configuration
 
