@@ -25,18 +25,26 @@ Remote
   container { 
 
     table {
-      title = "remote: newest 30 toots"
+      title = "remote: recent toots"
       sql = <<EOQ
         with toots as (
           select
             _ctx ->> 'connection_name' as connection,
             user_name || '.' || display_name as person,
-            to_char(created_at, 'MM-DD HH24:mm') as timestamp,
+            to_char(created_at, 'MM-DD HH24:MI') as timestamp,
             url,
-            regexp_replace(content, '<[^>]+>', '', 'g') as toot
+            replace (
+              replace (
+                regexp_replace(content, '<[^>]+>', '', 'g'),
+                '&#39;', 
+                ''''
+              ),
+              '&quot;', 
+              '"'
+            ) as toot
           from 
             mastodon_federated_toot
-          limit 30
+          limit 100
         )
         select
           *

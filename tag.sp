@@ -6,7 +6,7 @@ dashboard "Tag" {
 
   container {
     text {
-      width = 2
+      width = 4
       value = <<EOT
 [Home](${local.host}/mastodon.dashboard.Home)
 🞄
