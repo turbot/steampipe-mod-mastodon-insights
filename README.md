@@ -16,7 +16,7 @@ https://user-images.githubusercontent.com/46509/201509809-7decc15a-79f4-4e6a-b78
 
 Mastodon dashboards answer questions like:
 
-- What are recent tweets on my home timeline?
+- Recent toots on my home timeline?
 - On the local timeline?
 - On the federated timeline?
 - Which toots are hashtagged `science`?
