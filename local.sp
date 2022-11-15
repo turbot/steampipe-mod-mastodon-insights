@@ -21,7 +21,6 @@ Local
     }
   }
 
-
   container { 
 
     table {
@@ -32,33 +31,36 @@ Local
             _ctx ->> 'connection_name' as connection,
             user_name || '.' || display_name as person,
             to_char(created_at, 'MM-DD HH24:MI') as timestamp,
-            url,
-            replace (
-              replace (
-                regexp_replace(content, '<[^>]+>', '', 'g'),
-                '&#39;', 
-                ''''
-              ),
-              '&quot;', 
-              '"'
-            ) as toot
+            case 
+              when reblog -> 'url' is not null then 'yes'
+              else ''
+            end as is_boost,
+            case 
+              when reblog -> 'url' is not null then reblog ->> 'url'
+              else url
+            end as url,
+            case 
+              when in_reply_to_account_id is not null then  ( select acct from mastodon_account where id = in_reply_to_account_id )
+              else ''
+            end as in_reply_to,
+            case 
+              when reblog -> 'url' is null then 
+                sanitize_toot(content)
+              else
+                sanitize_toot(reblog ->> 'content')
+            end as toot
           from 
             mastodon_local_toot
-          limit 100
+            limit ${local.limit}
         )
         select
           *
         from
           toots
-        where 
-          url != ''
         order by
           timestamp desc
       EOQ
       column "toot" {
-        wrap = "all"
-      }
-      column "url" {
         wrap = "all"
       }
 

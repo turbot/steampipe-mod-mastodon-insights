@@ -41,6 +41,9 @@ Tag
     table {
       args = [ self.input.hashtag.value ]
       query = query.hashtag_detail
+      column "categories" {
+        wrap = "all"
+      }
     }
 
   }
