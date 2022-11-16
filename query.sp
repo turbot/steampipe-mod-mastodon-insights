@@ -1,3 +1,30 @@
+query "home_timeline" {
+  sql = <<EOQ
+    select
+      *
+    from
+      toots('mastodon_home_toot', ${local.limit})
+  EOQ
+}
+
+query "local_timeline" {
+  sql = <<EOQ
+    select
+      *
+    from
+      toots('mastodon_local_toot', ${local.limit})
+  EOQ
+}
+
+query "federated_timeline" {
+  sql = <<EOQ
+    select
+      *
+    from
+      toots('mastodon_federated_toot', ${local.limit})
+  EOQ
+}
+
 query "hashtag_detail" {
   sql = <<EOQ
     with data as (
