@@ -43,6 +43,30 @@ git clone https://github.com/turbot/steampipe-mod-mastodon-insights
 cd steampipe-mod-mastodon-insights
 ```
 
+Define two functions:
+
+The mod uses a pair of Postgres functions, `toots` and `sanitize_toots`, to remove what would otherwise be a lot of duplicate code across similar dashboards. To "install" the functions, copy them one at a time from `functions.sql` and paste them into the Steampipe CLI.
+
+```
+> create or replace function sanitize_toot(toot text) returns text as $$
+  declare
+    untagged text := regexp_replace(toot, '<[^>]+>', '', 'g');
+    unapostrophized text := replace(untagged, '&#39;', '');
+    unquoted text := replace(unapostrophized, '&quot;', '');
+  begin
+    return unquoted;
+  end;
+$$ language plpgsql;
+>
+> select sanitize_toot('<p>foo</p>')
++---------------+
+| sanitize_toot |
++---------------+
+| foo           |
++---------------+
+>
+```
+
 ### Usage
 
 Start your dashboard server:
@@ -56,11 +80,6 @@ The dashboard launches at https://localhost:9194.
 ### Credentials
 
 This mod uses the credentials configured in the [Steampipe Mastodon  plugin](https://github.com/turbot/steampipe-plugin-mastodon).
-
-### Configuration
-
-No extra configuration is required.
-
 ## Contributing
 
 If you have an idea for additional dashboards or just want to help maintain and extend this mod ([or others](https://github.com/topics/steampipe-mod)) we would love you to join the community and start contributing.
