@@ -8,6 +8,8 @@ dashboard "Tag" {
     text {
       width = 4
       value = <<EOT
+[Direct](${local.host}/mastodon.dashboard.Direct)
+🞄
 [Home](${local.host}/mastodon.dashboard.Home)
 🞄
 [Local](${local.host}/mastodon.dashboard.Local)

@@ -7,6 +7,16 @@ query "home_timeline" {
   EOQ
 }
 
+query "direct_timeline" {
+  sql = <<EOQ
+    select
+      *
+    from
+      toots('mastodon_direct_toot', ${local.limit})
+  EOQ
+}
+
+
 query "local_timeline" {
   sql = <<EOQ
     select

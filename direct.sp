@@ -1,4 +1,4 @@
-dashboard "Home" {
+dashboard "Direct" {
   
   tags = {
     service = "Mastodon"
@@ -8,9 +8,9 @@ dashboard "Home" {
     text {
       width = 4
       value = <<EOT
-[Direct](${local.host}/mastodon.dashboard.Direct)
+Direct
 🞄
-Home
+[Home](${local.host}/mastodon.dashboard.Home)
 🞄
 [Local](${local.host}/mastodon.dashboard.Local)
 🞄
@@ -26,8 +26,8 @@ Home
   container { 
 
     table {
-      title = "home: recent toots"
-      query = query.home_timeline
+      title = "direct: recent toots"
+      query = query.direct_timeline
       column "toot" {
         wrap = "all"
       }
