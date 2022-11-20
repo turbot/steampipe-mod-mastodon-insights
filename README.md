@@ -35,7 +35,6 @@ brew install steampipe
 
 Install and configure the [Mastodon plugin](https://github.com/turbot/steampipe-plugin-mastodon).
 
-
 Clone:
 
 ```sh
