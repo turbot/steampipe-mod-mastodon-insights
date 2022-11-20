@@ -23,12 +23,22 @@ Home
     }
   }
 
+  container {
+    table {
+      width = 2
+      sql = "select distinct _ctx ->> 'connection_name' as server from mastodon_weekly_activity"
+    }
+  }
+
   container { 
 
     table {
       title = "home: recent toots"
       query = query.home_timeline
       column "toot" {
+        wrap = "all"
+      }
+      column "url" {
         wrap = "all"
       }
     }

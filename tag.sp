@@ -24,6 +24,13 @@ Tag
   }
 
   container {
+    table {
+      width = 2
+      sql = "select distinct _ctx ->> 'connection_name' as server from mastodon_weekly_activity"
+    }
+  }
+
+  container {
 
     input "hashtag" {
       width = 2
