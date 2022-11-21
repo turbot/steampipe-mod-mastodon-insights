@@ -34,7 +34,8 @@ Home
 
     table {
       title = "home: recent toots"
-      query = query.home_timeline
+      query = query.timeline
+      args = [ "home" ]
       column "toot" {
         wrap = "all"
       }

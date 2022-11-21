@@ -34,7 +34,8 @@ Local
 
     table {
       title = "local: recent toots"
-      query = query.local_timeline
+      query = query.timeline
+      args = [ "local" ]
       column "toot" {
         wrap = "all"
       }

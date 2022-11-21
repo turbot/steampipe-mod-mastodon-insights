@@ -32,7 +32,8 @@ Remote
 
     table {
       title = "remote: recent toots"
-      query = query.federated_timeline
+      query = query.timeline
+      args = [ "remote" ]
       column "toot" {
         wrap = "all"
       }

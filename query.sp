@@ -1,38 +1,41 @@
-query "home_timeline" {
+query "timeline" {
   sql = <<EOQ
+    with toots as (
+      select
+        user_name || ' ' || display_name as person,
+        case
+          when reblog -> 'url' is null then
+            sanitize_toot(content)
+          else
+            sanitize_toot(reblog ->> 'content')
+        end as toot,
+        to_char(created_at, 'MM-DD HH24:MI') as created_at,
+        case
+          when reblog -> 'url' is not null then '🢁'
+          else ''
+        end as 🢁,
+        case
+          when reblog -> 'url' is not null then reblog ->> 'url'
+          else url
+        end as url,
+        case
+          when in_reply_to_account_id is not null then  ( select acct from mastodon_account where id = in_reply_to_account_id )
+          else ''
+        end as in_reply_to
+      from
+        mastodon_toot
+      where
+        timeline = $1
+      limit ${local.limit}
+    )
     select
       *
     from
-      toots('mastodon_home_toot', ${local.limit})
+      toots
+    order by
+      created_at desc
   EOQ
-}
-
-query "direct_timeline" {
-  sql = <<EOQ
-    select
-      *
-    from
-      toots('mastodon_direct_toot', ${local.limit})
-  EOQ
-}
-
-
-query "local_timeline" {
-  sql = <<EOQ
-    select
-      *
-    from
-      toots('mastodon_local_toot', ${local.limit})
-  EOQ
-}
-
-query "federated_timeline" {
-  sql = <<EOQ
-    select
-      *
-    from
-      toots('mastodon_federated_toot', ${local.limit})
-  EOQ
+  param "timeline" {}
 }
 
 query "hashtag_detail" {

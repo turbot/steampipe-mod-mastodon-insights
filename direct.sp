@@ -34,7 +34,8 @@ Direct
 
     table {
       title = "direct: recent toots"
-      query = query.direct_timeline
+      query = query.timeline
+      args = [ "direct" ]
       column "toot" {
         wrap = "all"
       }
