@@ -2,7 +2,7 @@ query "timeline" {
   sql = <<EOQ
     with toots as (
       select
-        user_name || ' ' || display_name as person,
+        ( select left(user_name || ' ' || display_name, 30) ) as person,
         case
           when reblog -> 'url' is null then
             content
