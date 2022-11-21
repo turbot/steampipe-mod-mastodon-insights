@@ -5,9 +5,9 @@ query "timeline" {
         user_name || ' ' || display_name as person,
         case
           when reblog -> 'url' is null then
-            sanitize_toot(content)
+            content
           else
-            sanitize_toot(reblog ->> 'content')
+            reblog ->> 'content'
         end as toot,
         to_char(created_at, 'MM-DD HH24:MI') as created_at,
         case
@@ -29,7 +29,19 @@ query "timeline" {
       limit ${local.limit}
     )
     select
-      *
+      person,
+      replace (
+        replace (
+          regexp_replace(toot, '<[^>]+>', '', 'g'),
+          '&#39;',
+          ''
+        ),
+        '&quot;',
+        ''
+      ) as toot,
+      🢁,
+      🡼,
+      url
     from
       toots
     order by
