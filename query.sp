@@ -15,13 +15,13 @@ query "timeline" {
           else ''
         end as 🢁,
         case
-          when reblog -> 'url' is not null then reblog ->> 'url'
-          else url
-        end as url,
-        case
           when in_reply_to_account_id is not null then '🡼 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
           else ''
-        end as 🡼
+        end as 🡼,
+        case
+          when reblog -> 'url' is not null then reblog ->> 'url'
+          else url
+        end as url
       from
         mastodon_toot
       where
