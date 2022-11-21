@@ -19,9 +19,9 @@ query "timeline" {
           else url
         end as url,
         case
-          when in_reply_to_account_id is not null then  ( select acct from mastodon_account where id = in_reply_to_account_id )
+          when in_reply_to_account_id is not null then '🡼 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
           else ''
-        end as in_reply_to
+        end as 🡼
       from
         mastodon_toot
       where
