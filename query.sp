@@ -32,7 +32,7 @@ query "timeline" {
       person,
       replace (
         replace (
-          regexp_replace(toot, '<[^>]+>', '', 'g'),
+          regexp_replace(toot, '<[^>]+>', ' ', 'g'),
           '&#39;',
           ''
         ),
