@@ -14,6 +14,8 @@ dashboard "Tag" {
 🞄
 [Local](${local.host}/mastodon.dashboard.Local)
 🞄
+[Rate](${local.host}/mastodon.dashboard.Rate)
+🞄
 [Remote](${local.host}/mastodon.dashboard.Remote)
 🞄
 [Server](${local.host}/mastodon.dashboard.Server)

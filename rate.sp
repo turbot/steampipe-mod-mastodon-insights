@@ -1,4 +1,4 @@
-dashboard "Direct" {
+dashboard "Rate" {
   
   tags = {
     service = "Mastodon"
@@ -8,13 +8,11 @@ dashboard "Direct" {
     text {
       width = 4
       value = <<EOT
-Direct
-🞄
 [Home](${local.host}/mastodon.dashboard.Home)
 🞄
 [Local](${local.host}/mastodon.dashboard.Local)
 🞄
-[Rate](${local.host}/mastodon.dashboard.Rate)
+Rate
 🞄
 [Remote](${local.host}/mastodon.dashboard.Remote)
 🞄
@@ -27,23 +25,20 @@ Direct
 
   container {
     table {
-      width = 2
-      sql = "select distinct _ctx ->> 'connection_name' as server from mastodon_weekly_activity"
+      title = "rate limit"
+      width = 6
+      sql = <<EOQ
+        select
+          _ctx ->> 'connection_name' as server,
+          max,
+          remaining,
+          reset
+        from
+          mastodon_rate
+      EOQ
     }
   }
 
-  container { 
-
-    table {
-      title = "direct: recent toots"
-      query = query.timeline
-      args = [ "direct" ]
-      column "toot" {
-        wrap = "all"
-      }
-    }
-
-  }
 
 }
 

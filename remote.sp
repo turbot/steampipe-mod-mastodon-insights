@@ -12,6 +12,8 @@ dashboard "Remote" {
 🞄
 [Local](${local.host}/mastodon.dashboard.Local)
 🞄
+[Rate](${local.host}/mastodon.dashboard.Rate)
+🞄
 Remote
 🞄
 [Server](${local.host}/mastodon.dashboard.Server)
