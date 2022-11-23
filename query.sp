@@ -13,11 +13,11 @@ query "timeline" {
         case
           when reblog -> 'url' is not null then '🢁'
           else ''
-        end as 🢁,
+        end as boosted,
         case
           when in_reply_to_account_id is not null then '🡼 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
           else ''
-        end as 🡼,
+        end as in_reply_to,
         case
           when reblog -> 'url' is not null then reblog ->> 'url'
           else url
@@ -31,8 +31,8 @@ query "timeline" {
     select
       person,
       toot,
-      🢁,
-      🡼,
+      boosted 🢁,
+      in_reply_to 🡼,
       url
     from
       toots
