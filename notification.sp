@@ -6,7 +6,7 @@ dashboard "Notification" {
 
   container {
     text {
-      width = 4
+      width = 5
       value = <<EOT
 [Direct](${local.host}/mastodon.dashboard.Direct)
 🞄
