@@ -2,7 +2,8 @@ query "timeline" {
   sql = <<EOQ
     with toots as (
       select
-        ( select left(user_name || ' ' || display_name, 30) ) as person,
+        account_url as account,
+        display_name as person,
         case
           when reblog -> 'url' is null then
             content
@@ -29,6 +30,7 @@ query "timeline" {
       limit ${local.limit}
     )
     select
+      account,
       person,
       toot,
       boosted 🢁,

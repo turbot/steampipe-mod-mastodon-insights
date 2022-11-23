@@ -43,6 +43,7 @@ Home
       column "toot" {
         wrap = "all"
       }
+
     }
 
   }
