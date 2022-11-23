@@ -6,11 +6,14 @@ View Mastodon timelines, search hashtags, find interesting people, and check ser
 
 Mastodon dashboards answer questions like:
 
+- Recent direct messages?
+- Recent notifications?
 - Recent toots on my home timeline?
 - On the local timeline?
 - On the federated timeline?
 - Which toots are hashtagged `science`?
 - How many toots, logins, and registrations on my server in recent weeks?
+- How many more API calls can I make during this 5-minute cycle?
 
 ## Getting started
 
