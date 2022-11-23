@@ -77,7 +77,6 @@ query "hashtag_detail" {
       select
         u.connection,
         u.name,
-        u.recent_uses,
         r.guid as link,
         to_char(r.published, 'YYYY-MM-DD') as published,
         r.categories
@@ -88,7 +87,7 @@ query "hashtag_detail" {
       on 
         r.feed_link = u.feed_link
       where
-        recent_uses > 0
+        recent_uses > 1
       order by 
         recent_uses desc, published desc
     EOQ
