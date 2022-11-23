@@ -10,7 +10,7 @@ dashboard "Notification" {
       value = <<EOT
 [Direct](${local.host}/mastodon.dashboard.Direct)
 🞄
-[Home]${local.host}/mastodon.dashboard.Home)
+[Home](${local.host}/mastodon.dashboard.Home)
 🞄
 [Local](${local.host}/mastodon.dashboard.Local)
 🞄
