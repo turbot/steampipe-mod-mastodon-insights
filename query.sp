@@ -7,7 +7,7 @@ query "timeline" {
           when reblog -> 'url' is null then
             content
           else
-            reblog ->> 'content'
+            reblog_content
         end as toot,
         to_char(created_at, 'MM-DD HH24:MI') as created_at,
         case
@@ -30,15 +30,7 @@ query "timeline" {
     )
     select
       person,
-      replace (
-        replace (
-          regexp_replace(toot, '<[^>]+>', ' ', 'g'),
-          '&#39;',
-          ''
-        ),
-        '&quot;',
-        ''
-      ) as toot,
+      toot,
       🢁,
       🡼,
       url
