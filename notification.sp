@@ -1,4 +1,4 @@
-dashboard "Direct" {
+dashboard "Notification" {
   
   tags = {
     service = "Mastodon"
@@ -8,13 +8,13 @@ dashboard "Direct" {
     text {
       width = 4
       value = <<EOT
-Direct
+[Direct](${local.host}/mastodon.dashboard.Direct)
 🞄
-[Home](${local.host}/mastodon.dashboard.Home)
+[Home]${local.host}/mastodon.dashboard.Home)
 🞄
 [Local](${local.host}/mastodon.dashboard.Local)
 🞄
-[Notification](${local.host}/mastodon.dashboard.Notification)
+Notification
 🞄
 [Rate](${local.host}/mastodon.dashboard.Rate)
 🞄
@@ -37,12 +37,8 @@ Direct
   container { 
 
     table {
-      title = "direct: recent toots"
-      query = query.timeline
-      args = [ "direct" ]
-      column "toot" {
-        wrap = "all"
-      }
+      title = "notifications"
+      query = query.notification
     }
 
   }

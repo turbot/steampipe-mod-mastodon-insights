@@ -12,6 +12,8 @@ dashboard "Rate" {
 🞄
 [Local](${local.host}/mastodon.dashboard.Local)
 🞄
+[Notification](${local.host}/mastodon.dashboard.Notification)
+🞄
 Rate
 🞄
 [Remote](${local.host}/mastodon.dashboard.Remote)
