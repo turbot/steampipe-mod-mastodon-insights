@@ -36,9 +36,6 @@ StatusSearch
       width = 2
       sql = "select distinct _ctx ->> 'connection_name' as server from mastodon_weekly_activity"
     }
-  }
-
-  container {
 
     input "search_term" {
       type = "text"
@@ -49,7 +46,7 @@ StatusSearch
   }
 
   container {
-  
+
     table {
       args = [ self.input.search_term.value ]
       query = query.search_status
@@ -57,7 +54,6 @@ StatusSearch
         wrap = "all"
       }
     }
-
   }
 
 }  
