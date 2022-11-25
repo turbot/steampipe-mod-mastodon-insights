@@ -6,13 +6,17 @@ dashboard "Remote" {
 
   container {
     text {
-      width = 5
+      width = 6
       value = <<EOT
 [Home](${local.host}/mastodon.dashboard.Home)
 🞄
 [Local](${local.host}/mastodon.dashboard.Local)
 🞄
+[Direct](${local.host}/mastodon.dashboard.Direct)
+🞄
 [Notification](${local.host}/mastodon.dashboard.Notification)
+🞄
+[PeopleSearch](${local.host}/mastodon.dashboard.PeopleSearch)
 🞄
 [Rate](${local.host}/mastodon.dashboard.Rate)
 🞄
@@ -43,7 +47,9 @@ Remote
       column "toot" {
         wrap = "all"
       }
-
+      column "url" {
+        wrap = "all"
+      }
     }
 
   }

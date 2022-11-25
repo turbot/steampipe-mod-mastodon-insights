@@ -6,7 +6,7 @@ dashboard "Notification" {
 
   container {
     text {
-      width = 5
+      width = 6
       value = <<EOT
 [Direct](${local.host}/mastodon.dashboard.Direct)
 🞄
@@ -15,6 +15,8 @@ dashboard "Notification" {
 [Local](${local.host}/mastodon.dashboard.Local)
 🞄
 Notification
+🞄
+[PeopleSearch](${local.host}/mastodon.dashboard.PeopleSearch)
 🞄
 [Rate](${local.host}/mastodon.dashboard.Rate)
 🞄

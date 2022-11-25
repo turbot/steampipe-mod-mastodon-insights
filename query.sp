@@ -44,7 +44,7 @@ query "timeline" {
   param "timeline" {}
 }
 
-query "status_search" {
+query "search_status" {
   sql = <<EOQ
     with toots as (
       select
@@ -91,7 +91,7 @@ query "status_search" {
   param "search_term" {}
 }
 
-query "hashtag_search" {
+query "search_hashtag" {
   sql = <<EOQ
     with data as (
       select 
@@ -132,8 +132,27 @@ query "hashtag_search" {
       order by 
         recent_uses desc, published desc
     EOQ
-    param "hashtag" {}
+    param "search_term" {}
 }
+
+query "search_people" {
+  sql = <<EOQ
+    select 
+      url,
+      display_name as person,
+      followers_count,
+      following_count,
+      note
+    from 
+      mastodon_search_account
+    where 
+      query = $1
+    order by
+      display_name
+  EOQ
+  param "search_term" {}
+}
+
 
 query "notification" {
   sql = <<EOQ

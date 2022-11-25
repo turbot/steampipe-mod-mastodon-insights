@@ -6,7 +6,7 @@ dashboard "Home" {
 
   container {
     text {
-      width = 5
+      width = 6
       value = <<EOT
 [Direct](${local.host}/mastodon.dashboard.Direct)
 🞄
@@ -15,6 +15,8 @@ Home
 [Local](${local.host}/mastodon.dashboard.Local)
 🞄
 [Notification](${local.host}/mastodon.dashboard.Notification)
+🞄
+[PeopleSearch](${local.host}/mastodon.dashboard.PeopleSearch)
 🞄
 [Rate](${local.host}/mastodon.dashboard.Rate)
 🞄
@@ -44,6 +46,9 @@ Home
       query = query.timeline
       args = [ "home" ]
       column "toot" {
+        wrap = "all"
+      }
+      column "url" {
         wrap = "all"
       }
 

@@ -1,4 +1,4 @@
-dashboard "Local" {
+dashboard "PeopleSearch" {
   
   tags = {
     service = "Mastodon"
@@ -12,11 +12,11 @@ dashboard "Local" {
 🞄
 [Home](${local.host}/mastodon.dashboard.Home)
 🞄
-Local
+[Local](${local.host}/mastodon.dashboard.Local)
 🞄
 [Notification](${local.host}/mastodon.dashboard.Notification)
 🞄
-[PeopleSearch](${local.host}/mastodon.dashboard.PeopleSearch)
+PeopleSearch
 🞄
 [Rate](${local.host}/mastodon.dashboard.Rate)
 🞄
@@ -38,16 +38,23 @@ Local
     }
   }
 
-  container { 
 
+  container {
+
+    input "search_term" {
+      type = "text"
+      width = 2
+      title = "search for people"
+    }
+
+  }
+
+  container {
+  
     table {
-      title = "local: recent toots"
-      query = query.timeline
-      args = [ "local" ]
-      column "toot" {
-        wrap = "all"
-      }
-      column "url" {
+      args = [ self.input.search_term.value ]
+      query = query.search_people
+      column "note" {
         wrap = "all"
       }
     }

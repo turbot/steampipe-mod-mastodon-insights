@@ -6,7 +6,7 @@ dashboard "Direct" {
 
   container {
     text {
-      width = 5
+      width = 6
       value = <<EOT
 Direct
 🞄
@@ -15,6 +15,8 @@ Direct
 [Local](${local.host}/mastodon.dashboard.Local)
 🞄
 [Notification](${local.host}/mastodon.dashboard.Notification)
+🞄
+[PeopleSearch](${local.host}/mastodon.dashboard.PeopleSearch)
 🞄
 [Rate](${local.host}/mastodon.dashboard.Rate)
 🞄
@@ -43,6 +45,9 @@ Direct
       query = query.timeline
       args = [ "direct" ]
       column "toot" {
+        wrap = "all"
+      }
+      column "url" {
         wrap = "all"
       }
     }

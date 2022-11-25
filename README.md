@@ -11,8 +11,9 @@ Mastodon dashboards answer questions like:
 - Recent toots on my home timeline?
 - On the local timeline?
 - On the federated timeline?
-- Which toots are hashtagged `science`?
+- Which hashtags match `science`?
 - Which toots on the home timeline match `federation`?
+- Who matches `alice`?
 - How many toots, logins, and registrations on my server in recent weeks?
 - How many more API calls can I make during this 5-minute cycle?
 

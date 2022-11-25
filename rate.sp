@@ -6,13 +6,17 @@ dashboard "Rate" {
 
   container {
     text {
-      width = 5
+      width = 6
       value = <<EOT
+[Direct](${local.host}/mastodon.dashboard.Direct)
+🞄
 [Home](${local.host}/mastodon.dashboard.Home)
 🞄
 [Local](${local.host}/mastodon.dashboard.Local)
 🞄
 [Notification](${local.host}/mastodon.dashboard.Notification)
+🞄
+[PeopleSearch](${local.host}/mastodon.dashboard.PeopleSearch)
 🞄
 Rate
 🞄
