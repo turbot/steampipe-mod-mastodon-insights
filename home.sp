@@ -22,7 +22,9 @@ Home
 🞄
 [Server](${local.host}/mastodon.dashboard.Server)
 🞄
-[Tag](${local.host}/mastodon.dashboard.Tag)
+[StatusSearch](${local.host}/mastodon.dashboard.StatusSearch)
+🞄
+[TagSearch](${local.host}/mastodon.dashboard.TagSearch)
       EOT
     }
   }
@@ -33,6 +35,7 @@ Home
       sql = "select distinct _ctx ->> 'connection_name' as server from mastodon_weekly_activity"
     }
   }
+
 
   container { 
 

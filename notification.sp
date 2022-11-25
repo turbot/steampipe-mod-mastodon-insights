@@ -22,7 +22,9 @@ Notification
 🞄
 [Server](${local.host}/mastodon.dashboard.Server)
 🞄
-[Tag](${local.host}/mastodon.dashboard.Tag)
+[StatusSearch](${local.host}/mastodon.dashboard.StatusSearch)
+🞄
+[TagSearch](${local.host}/mastodon.dashboard.TagSearch)
       EOT
     }
   }

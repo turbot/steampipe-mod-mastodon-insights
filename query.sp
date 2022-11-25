@@ -44,7 +44,54 @@ query "timeline" {
   param "timeline" {}
 }
 
-query "hashtag_detail" {
+query "status_search" {
+  sql = <<EOQ
+    with toots as (
+      select
+        account_url as account,
+        display_name as person,
+        case
+          when reblog -> 'url' is null then
+            content
+          else
+            reblog_content
+        end as toot,
+        to_char(created_at, 'MM-DD HH24:MI') as created_at,
+        case
+          when reblog -> 'url' is not null then '🢁'
+          else ''
+        end as boosted,
+        case
+          when in_reply_to_account_id is not null then '🡼 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
+          else ''
+        end as in_reply_to,
+        case
+          when reblog -> 'url' is not null then reblog ->> 'url'
+          else url
+        end as url
+      from
+        mastodon_toot
+      where
+        timeline = 'search_status'
+        and query = $1
+      limit ${local.limit}
+    )
+    select
+      account,
+      person,
+      toot,
+      boosted 🢁,
+      in_reply_to 🡼,
+      url
+    from
+      toots
+    order by
+      created_at desc
+  EOQ
+  param "search_term" {}
+}
+
+query "hashtag_search" {
   sql = <<EOQ
     with data as (
       select 
