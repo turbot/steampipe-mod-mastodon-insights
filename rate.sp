@@ -36,7 +36,7 @@ Rate
           _ctx ->> 'connection_name' as server,
           max,
           remaining,
-          reset
+          to_char(reset, 'HH24:MI') as reset
         from
           mastodon_rate
       EOQ
