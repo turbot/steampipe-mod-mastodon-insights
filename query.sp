@@ -194,7 +194,7 @@ query "notification" {
   sql = <<EOQ
     select
       category,
-      to_char(created_at, 'YYYY-MM-DD HH24::MI') as created_at,
+      to_char(created_at, 'YYYY-MM-DD HH24:MI') as created_at,
       account,
       url
     from
