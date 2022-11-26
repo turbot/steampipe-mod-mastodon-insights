@@ -28,7 +28,7 @@ Followers
 🞄
 [Server](${local.host}/mastodon.dashboard.Server)
 🞄
-StatusSearch
+[StatusSearch](${local.host}/mastodon.dashboard.StatusSearch)
 🞄
 [TagSearch](${local.host}/mastodon.dashboard.TagSearch)
       EOT
