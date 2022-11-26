@@ -153,6 +153,36 @@ query "search_people" {
   param "search_term" {}
 }
 
+query "followers" {
+  sql = <<EOQ
+    select
+      url,
+      display_name,
+      followers_count,
+      following_count,
+      note
+    from
+      mastodon_followers
+    order by
+      followers_count desc
+  EOQ
+}
+
+query "following" {
+  sql = <<EOQ
+    select
+      url,
+      display_name,
+      followers_count,
+      following_count,
+      note
+    from
+      mastodon_following
+    order by
+      followers_count desc
+  EOQ
+}
+
 
 query "notification" {
   sql = <<EOQ

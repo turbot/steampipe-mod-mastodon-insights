@@ -6,9 +6,13 @@ dashboard "Home" {
 
   container {
     text {
-      width = 6
+      width = 8
       value = <<EOT
 [Direct](${local.host}/mastodon.dashboard.Direct)
+🞄
+[Followers](${local.host}/mastodon.dashboard.Followers)
+🞄
+[Following](${local.host}/mastodon.dashboard.Following)
 🞄
 Home
 🞄
@@ -32,8 +36,8 @@ Home
   }
 
   container {
-    table {
-      width = 2
+    card {
+      width = 4
       sql = "select distinct _ctx ->> 'connection_name' as server from mastodon_weekly_activity"
     }
   }

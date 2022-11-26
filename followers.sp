@@ -1,5 +1,5 @@
-dashboard "Server" {
-  
+dashboard "Followers" {
+
   tags = {
     service = "Mastodon"
   }
@@ -10,7 +10,7 @@ dashboard "Server" {
       value = <<EOT
 [Direct](${local.host}/mastodon.dashboard.Direct)
 🞄
-[Followers](${local.host}/mastodon.dashboard.Followers)
+Followers
 🞄
 [Following](${local.host}/mastodon.dashboard.Following)
 🞄
@@ -26,9 +26,9 @@ dashboard "Server" {
 🞄
 [Remote](${local.host}/mastodon.dashboard.Remote)
 🞄
-Server
+[Server](${local.host}/mastodon.dashboard.Server)
 🞄
-[StatusSearch](${local.host}/mastodon.dashboard.StatusSearch)
+StatusSearch
 🞄
 [TagSearch](${local.host}/mastodon.dashboard.TagSearch)
       EOT
@@ -36,46 +36,29 @@ Server
   }
 
   container {
+
     card {
       width = 4
       sql = "select distinct _ctx ->> 'connection_name' as server from mastodon_weekly_activity"
     }
+
+    card {
+      width = 2
+      sql = "select count(*) as followers from mastodon_followers"
+    }
+
   }
 
   container {
 
-    chart {
-      width = 6
-      title = "toots by week"
-      sql = <<EOQ
-        select
-          to_char(week, 'MM-DD') as week,
-          statuses
-        from
-          mastodon_weekly_activity
-        order by 
-          week
-      EOQ
+    table {
+      query = query.followers
+      column "note" {
+        wrap = "all"
+      }
+
     }
-
-    chart {
-      width = 6
-      title = "registrations by week"
-      sql = <<EOQ
-        select
-          to_char(week, 'MM-DD') as week,
-          registrations,
-          logins
-        from
-          mastodon_weekly_activity
-        order by 
-          week
-      EOQ
-    }
-
-
-
-  
   }
 
 }
+

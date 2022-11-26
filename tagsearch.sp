@@ -6,11 +6,15 @@ dashboard "TagSearch" {
 
   container {
     text {
-      width = 6
+      width = 8
       value = <<EOT
 [Direct](${local.host}/mastodon.dashboard.Direct)
 🞄
 [Home](${local.host}/mastodon.dashboard.Home)
+🞄
+[Followers](${local.host}/mastodon.dashboard.Followers)
+🞄
+[Following](${local.host}/mastodon.dashboard.Following)
 🞄
 [Local](${local.host}/mastodon.dashboard.Local)
 🞄
@@ -32,8 +36,8 @@ TagSearch
   }
 
   container {
-    table {
-      width = 2
+    card {
+      width = 4
       sql = "select distinct _ctx ->> 'connection_name' as server from mastodon_weekly_activity"
     }
 
