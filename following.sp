@@ -47,6 +47,20 @@ Following
       sql = "select count(*) as following from mastodon_following"
     }
 
+    chart {
+      width = 6
+      sql = <<EOQ
+        select
+          to_char(created_at, 'YYYY-MM') as month,
+          count(*)
+        from
+          mastodon_following
+        group by
+          month
+      EOQ
+    }
+
+
   }
 
   container {

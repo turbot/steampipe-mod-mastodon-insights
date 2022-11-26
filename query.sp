@@ -140,8 +140,10 @@ query "search_people" {
     select 
       url,
       display_name as person,
-      followers_count,
-      following_count,
+      to_char(created_at, 'YYYY-MM-DD') as created_at,
+      followers_count as followers,
+      following_count as following,
+      statuses_count as toots,
       note
     from 
       mastodon_search_account
@@ -158,8 +160,10 @@ query "followers" {
     select
       url,
       display_name,
-      followers_count,
-      following_count,
+      to_char(created_at, 'YYYY-MM-DD') as created_at,
+      followers_count as followers,
+      following_count as following,
+      statuses_count as toots,
       note
     from
       mastodon_followers
@@ -173,8 +177,10 @@ query "following" {
     select
       url,
       display_name,
-      followers_count,
-      following_count,
+      to_char(created_at, 'YYYY-MM-DD') as created_at,
+      followers_count as followers,
+      following_count as following,
+      statuses_count as toots,
       note
     from
       mastodon_following
