@@ -36,7 +36,7 @@ dashboard "Relationships" {
 node "server" {
   sql = <<EOQ
     with data as (
-      select
+      select 
         regexp_match(url, 'https://([^/]+)') as server
       from
         mastodon_toot
@@ -49,7 +49,7 @@ node "server" {
     select distinct
       server as id,
       server as title
-    from
+    from 
       data
   EOQ
 }
@@ -59,7 +59,7 @@ node "person" {
 
     with direct as (
       with data as (
-        select-
+        select 
           *,
           (regexp_match(url, 'https://([^/]+)'))[1] as server
         from
@@ -82,13 +82,13 @@ node "person" {
       where
         server is not null
     ),
-
+    
     indirect as (
       with data as (
         select
           *
         from
-          mastodon_toot
+          mastodon_toot 
         where
           timeline = 'home'
         limit
@@ -102,7 +102,7 @@ node "person" {
           'followers', reblog -> 'account' ->> 'followers_count',
           'following', reblog -> 'account' ->> 'following_count'
         ) as properties
-      from
+      from 
         data
       where
         reblog is not null
