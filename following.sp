@@ -48,6 +48,7 @@ Following
     }
 
     chart {
+      title = "follows by month of account creation"
       width = 6
       sql = <<EOQ
         select
