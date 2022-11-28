@@ -15,7 +15,8 @@ Mastodon dashboards answer questions like:
 - Who are my followers?
 - Which hashtags match `science`?
 - Which toots on the home timeline match `federation`?
-- Who matches `alice`?
+- Which accounts match `alice`?
+- Which accounts matching `alice` am I following, and/or followed by?
 - How many toots, logins, and registrations on my server in recent weeks?
 - How many more API calls can I make during this 5-minute cycle?
 
