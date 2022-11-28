@@ -47,6 +47,10 @@ Following
       sql = "select count(*) as following from mastodon_following"
     }
 
+  }
+
+  container {
+
     chart {
       title = "follows by month of account creation"
       width = 6
@@ -59,6 +63,36 @@ Following
         group by
           month
       EOQ
+    }
+
+    chart {
+      width = 6
+      type = "donut"
+      title = "follows by server domain"
+      sql = <<EOQ
+        with domains as (
+          select
+            (regexp_match(acct, '@(.+)'))[1] as domain
+          from
+            mastodon_following
+        )
+        select
+          case
+            when domain is null then $1
+            else domain
+          end as domain,
+          count(*)
+        from
+          domains
+        group by
+          domain
+        order by
+          count desc
+        limit 15
+      EOQ
+      param "server" {
+        default = local.server
+      }
     }
 
 
