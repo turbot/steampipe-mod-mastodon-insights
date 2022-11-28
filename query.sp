@@ -32,8 +32,8 @@ query "timeline" {
     select
       account,
       person,
-      toot,
       boosted 🢁,
+      toot,
       in_reply_to 🡼,
       url
     from
@@ -79,8 +79,8 @@ query "search_status" {
     select
       account,
       person,
-      toot,
       boosted 🢁,
+      toot,
       in_reply_to 🡼,
       url
     from
