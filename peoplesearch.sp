@@ -43,8 +43,8 @@ PeopleSearch
 
     input "search_term" {
       type = "text"
-      width = 2
-      title = "search for people"
+      width = 4
+      title = "search for people (use '' for ' e.g. O''Reilly)"
     }
 
   }

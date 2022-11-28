@@ -237,9 +237,10 @@ query "notification" {
   sql = <<EOQ
     select
       category,
+      account_url,
+      display_name,
       to_char(created_at, 'YYYY-MM-DD HH24:MI') as created_at,
-      account,
-      url
+      status_url
     from
       mastodon_notification
     order by
