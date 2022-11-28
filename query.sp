@@ -170,6 +170,7 @@ query "search_people" {
       mastodon_relationship r
     on
       d.id = r.id
+    order by following desc
   EOQ
   param "search_term" {}
 }
