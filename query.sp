@@ -137,20 +137,39 @@ query "search_hashtag" {
 
 query "search_people" {
   sql = <<EOQ
-    select 
-      url,
-      display_name as person,
-      to_char(created_at, 'YYYY-MM-DD') as created_at,
-      followers_count as followers,
-      following_count as following,
-      statuses_count as toots,
-      note
-    from 
-      mastodon_search_account
-    where 
-      query = $1
-    order by
-      display_name
+    with data as (
+      select
+        id,
+        url,
+        display_name as person,
+        to_char(created_at, 'YYYY-MM-DD') as created_at,
+        followers_count,
+        following_count,
+        statuses_count as toots,
+        note
+      from 
+        mastodon_search_account
+      where 
+        query = $1
+      order by
+        display_name
+    )
+    select
+      d.url,
+      d.person,
+      r.following,
+      r.followed_by,
+      d.created_at,
+      d.followers_count,
+      d.following_count,
+      d.toots,
+      d.note
+    from
+      data d
+    join
+      mastodon_relationship r
+    on
+      d.id = r.id
   EOQ
   param "search_term" {}
 }
@@ -181,6 +200,8 @@ is not only slow, but worse, quickly exhausts the 300-API-calls-per-5-minutes li
 hundreds of people.
 
 TBD: Work out a way to query `mastodon_relationship` with batches of (10? 100?) ids.
+
+Meanwhile, see query.search_people, this approach is practical there if the query yields a small result set.
 */
 query "following" {
   sql = <<EOQ
