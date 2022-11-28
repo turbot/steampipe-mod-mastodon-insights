@@ -172,20 +172,41 @@ query "followers" {
   EOQ
 }
 
+/*
+Joining with `mastodon_relationship` is possible, and useful -- I want to see at a glance 
+if a person I follow has followed me back! -- but not yet practical. The API's `accounts/relationships` 
+endpoint takes an array of ids, but the `mastodon_relationship` table for now only takes one id at a time because
+you can't make an URL like `accounts/relationships?id[]=1&id[]=2...&id[]=500`. The one-at-a-time approach
+is not only slow, but worse, quickly exhausts the 300-API-calls-per-5-minutes limit if you are following
+hundreds of people.
+
+TBD: Work out a way to query `mastodon_relationship` with batches of (10? 100?) ids.
+*/
 query "following" {
   sql = <<EOQ
+    with following as (
+      select
+        *
+      from
+        mastodon_following
+    )
     select
-      url,
-      display_name,
-      to_char(created_at, 'YYYY-MM-DD') as created_at,
-      followers_count as followers,
-      following_count as following,
-      statuses_count as toots,
-      note
+      f.url,
+      f.display_name,
+      --m.followed_by,
+      to_char(f.created_at, 'YYYY-MM-DD') as created_at,
+      f.followers_count as followers,
+      f.following_count as following,
+      f.statuses_count as toots,
+      f.note
     from
-      mastodon_following
+      following f
+    --join
+    --  mastodon_relationship m
+    --on
+    --  f.id = m.id
     order by
-      followers_count desc
+      created_at desc
   EOQ
 }
 
