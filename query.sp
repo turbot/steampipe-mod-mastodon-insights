@@ -235,16 +235,33 @@ query "following" {
 
 query "notification" {
   sql = <<EOQ
+    with notifications as (
+      select
+        category,
+        account_url,
+        account_id,
+        display_name,
+        to_char(created_at, 'YYYY-MM-DD HH24:MI') as created_at,
+        status_url
+      from
+        mastodon_notification
+    )
     select
-      category,
-      account_url,
-      display_name,
-      to_char(created_at, 'YYYY-MM-DD HH24:MI') as created_at,
-      status_url
+      n.category,
+      n.account_url,
+      n.display_name,
+      r.following,
+      r.followed_by,
+      n.created_at,
+      n.status_url
     from
-      mastodon_notification
+      notifications n
+    join
+      mastodon_relationship r
+    on
+      r.id = n.account_id
     order by
-      created_at desc
+      n.created_at desc
   EOQ
 }
 
