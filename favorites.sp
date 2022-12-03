@@ -1,4 +1,4 @@
-dashboard "PeopleSearch" {
+dashboard "Favorites" {
   
   tags = {
     service = "Mastodon"
@@ -10,7 +10,7 @@ dashboard "PeopleSearch" {
       value = <<EOT
 [Direct](${local.host}/mastodon.dashboard.Direct)
 🞄
-[Favorites](${local.host}/mastodon.dashboard.Favorites)
+Favorites
 🞄
 [Followers](${local.host}/mastodon.dashboard.Followers)
 🞄
@@ -22,7 +22,7 @@ dashboard "PeopleSearch" {
 🞄
 [Notification](${local.host}/mastodon.dashboard.Notification)
 🞄
-PeopleSearch
+[PeopleSearch](${local.host}/mastodon.dashboard.PeopleSearch)
 🞄
 [Rate](${local.host}/mastodon.dashboard.Rate)
 🞄
@@ -42,23 +42,21 @@ PeopleSearch
       width = 4
       sql = "select distinct _ctx ->> 'connection_name' as server from mastodon_weekly_activity"
     }
-
-    input "search_term" {
-      type = "text"
-      width = 4
-      title = "search for people (use '' for ' e.g. O''Reilly)"
-    }
-
   }
 
-  container {
-  
+
+  container { 
+
     table {
-      args = [ self.input.search_term.value ]
-      query = query.search_people
-      column "note" {
+      title = "favorites"
+      query = query.favorite
+      column "toot" {
         wrap = "all"
       }
+      column "url" {
+        wrap = "all"
+      }
+
     }
 
   }

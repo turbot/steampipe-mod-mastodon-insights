@@ -10,6 +10,8 @@ dashboard "Local" {
       value = <<EOT
 [Direct](${local.host}/mastodon.dashboard.Direct)
 🞄
+[Favorites](${local.host}/mastodon.dashboard.Favorites)
+🞄
 [Followers](${local.host}/mastodon.dashboard.Followers)
 🞄
 [Following](${local.host}/mastodon.dashboard.Following)

@@ -12,6 +12,8 @@ dashboard "TagSearch" {
 🞄
 [Home](${local.host}/mastodon.dashboard.Home)
 🞄
+[Favorites](${local.host}/mastodon.dashboard.Favorites)
+🞄
 [Followers](${local.host}/mastodon.dashboard.Followers)
 🞄
 [Following](${local.host}/mastodon.dashboard.Following)

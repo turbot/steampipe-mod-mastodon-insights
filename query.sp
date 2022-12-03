@@ -91,6 +91,55 @@ query "search_status" {
   param "search_term" {}
 }
 
+query "favorite" {
+  sql = <<EOQ
+    with toots as (
+      select
+        account_url as account,
+        display_name as person,
+        case
+          when reblog -> 'url' is null then
+            content
+          else
+            reblog_content
+        end as toot,
+        to_char(created_at, 'MM-DD HH24:MI') as created_at,
+        case
+          when reblog -> 'url' is not null then '🢁'
+          else ''
+        end as boosted,
+        case
+          when in_reply_to_account_id is not null then '🡼 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
+          else ''
+        end as in_reply_to,
+        case
+          when reblog -> 'url' is not null then reblog ->> 'url'
+          else url
+        end as url
+      from
+        mastodon_favorite
+      limit ${local.limit}
+    )
+    select
+      account,
+      person,
+      boosted 🢁,
+      toot,
+      in_reply_to 🡼,
+      url
+    from
+      toots
+    order by
+      created_at desc
+  EOQ
+}
+
+/*
+The duplicate code in the above three queries could be DRYed out using a Postgres function parameterized by table name. But there's
+not currently a standard way to deploy a mod that defines and uses functions. If we could alternatively parameterize queries by 
+table name in HCL that would be very nice. 
+*/
+
 query "search_hashtag" {
   sql = <<EOQ
     with data as (

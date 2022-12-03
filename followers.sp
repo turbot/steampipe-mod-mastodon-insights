@@ -10,6 +10,8 @@ dashboard "Followers" {
       value = <<EOT
 [Direct](${local.host}/mastodon.dashboard.Direct)
 🞄
+[Favorites](${local.host}/mastodon.dashboard.Favorites)
+🞄
 Followers
 🞄
 [Following](${local.host}/mastodon.dashboard.Following)
