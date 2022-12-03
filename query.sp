@@ -241,8 +241,9 @@ query "notification" {
         account_url,
         account_id,
         display_name,
-        to_char(created_at, 'YYYY-MM-DD HH24:MI') as created_at,
-        status_url
+        to_char(created_at, 'MM-DD HH24:MI') as created_at,
+        status_url,
+        status_content
       from
         mastodon_notification
     )
@@ -253,7 +254,8 @@ query "notification" {
       r.following,
       r.followed_by,
       n.created_at,
-      n.status_url
+      n.status_url,
+      substring(n.status_content from 1 for 20) as toot
     from
       notifications n
     join
