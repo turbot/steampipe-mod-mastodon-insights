@@ -16,6 +16,8 @@ dashboard "StatusSearch" {
 🞄
 [Following](${local.host}/mastodon.dashboard.Following)
 🞄
+[List](${local.host}/mastodon.dashboard.List)
+🞄
 [Home](${local.host}/mastodon.dashboard.Home)
 🞄
 [Local](${local.host}/mastodon.dashboard.Local)

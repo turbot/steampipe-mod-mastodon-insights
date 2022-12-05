@@ -340,15 +340,29 @@ query "notification" {
 
 query "list" {
   sql = <<EOQ
+    with list_ids as (
+      select
+        id,
+        title as list
+      from
+        mastodon_list
+    )
     select
-      l.title as list,
-      a.*
-    from
-      mastodon_list l
+      l.list,
+      t.user_name,
+      t.display_name,
+      to_char(t.created_at, 'MM-DD HH24:MI') as created_at,
+      t.content as toot
+    from 
+      mastodon_toot t
     join
-      mastodon_list_account a
+      list_ids l
     on
-      l.id = a.list_id
+      l.id = t.list_id
+    where
+      timeline = 'list'
+    order by
+      list, t.created_at desc
   EOQ
 }
 

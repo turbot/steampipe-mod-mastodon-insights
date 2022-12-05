@@ -18,6 +18,8 @@ dashboard "TagSearch" {
 🞄
 [Following](${local.host}/mastodon.dashboard.Following)
 🞄
+[List](${local.host}/mastodon.dashboard.List)
+🞄
 [Local](${local.host}/mastodon.dashboard.Local)
 🞄
 [Notification](${local.host}/mastodon.dashboard.Notification)

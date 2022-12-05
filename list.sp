@@ -1,5 +1,5 @@
-dashboard "PeopleSearch" {
-  
+dashboard "List" {
+
   tags = {
     service = "Mastodon"
   }
@@ -18,13 +18,13 @@ dashboard "PeopleSearch" {
 🞄
 [Home](${local.host}/mastodon.dashboard.Home)
 🞄
-[List](${local.host}/mastodon.dashboard.List)
+List
 🞄
 [Local](${local.host}/mastodon.dashboard.Local)
 🞄
 [Notification](${local.host}/mastodon.dashboard.Notification)
 🞄
-PeopleSearch
+[PeopleSearch](${local.host}/mastodon.dashboard.PeopleSearch)
 🞄
 [Rate](${local.host}/mastodon.dashboard.Rate)
 🞄
@@ -40,29 +40,22 @@ PeopleSearch
   }
 
   container {
+
     card {
       width = 4
       sql = "select distinct _ctx ->> 'connection_name' as server from mastodon_weekly_activity"
     }
 
-    input "search_term" {
-      type = "text"
-      width = 4
-      title = "search for people (use '' for ' e.g. O''Reilly)"
-    }
-
   }
 
   container {
-  
+
     table {
-      args = [ self.input.search_term.value ]
-      query = query.search_people
-      column "note" {
+      query = query.list
+      column "toot" {
         wrap = "all"
       }
     }
-
   }
 
 }

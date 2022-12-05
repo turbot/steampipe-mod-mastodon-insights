@@ -18,6 +18,8 @@ dashboard "Local" {
 🞄
 [Home](${local.host}/mastodon.dashboard.Home)
 🞄
+[List](${local.host}/mastodon.dashboard.List)
+🞄
 Local
 🞄
 [Notification](${local.host}/mastodon.dashboard.Notification)
