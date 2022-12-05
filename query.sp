@@ -367,6 +367,37 @@ query "list" {
   EOQ
 }
 
+query "my_toots" {
+  sql = <<EOQ
+      select
+        to_char(created_at, 'MM-DD HH24:MI') as created_at,
+        case
+          when reblog -> 'url' is not null then '🢁'
+          else ''
+        end as boosted,
+        case
+          when reblog -> 'url' is null then
+            content
+          else
+            reblog_content
+        end as toot,
+        case
+          when in_reply_to_account_id is not null then '🡼 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
+          else ''
+        end as in_reply_to,
+        case
+          when reblog -> 'url' is not null then reblog ->> 'url'
+          else url
+        end as url
+      from
+        mastodon_toot
+      where 
+        timeline = 'me'
+      order by
+        created_at desc
+  EOQ
+}
+
 query "users_by_wordcount" {
   sql = <<EOQ
     with toots as (o

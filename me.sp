@@ -1,4 +1,4 @@
-dashboard "Home" {
+dashboard "Me" {
   
   tags = {
     service = "Mastodon"
@@ -16,13 +16,13 @@ dashboard "Home" {
 🞄
 [Following](${local.host}/mastodon.dashboard.Following)
 🞄
-Home
+[Home](${local.host}/mastodon.dashboard.Home)
 🞄
 [List](${local.host}/mastodon.dashboard.List)
 🞄
 [Local](${local.host}/mastodon.dashboard.Local)
 🞄
-[Me](${local.host}/mastodon.dashboard.Me)
+Me
 🞄
 [Notification](${local.host}/mastodon.dashboard.Notification)
 🞄
@@ -46,15 +46,67 @@ Home
       width = 4
       sql = "select distinct _ctx ->> 'connection_name' as server from mastodon_weekly_activity"
     }
+
+    card {
+      
+      width = 4
+      sql = <<EOQ
+        select count(*) as "my toots" from mastodon_toot where timeline = 'me'
+      EOQ
+    }
+
   }
 
+    chart {
+      width = 6
+      title = "my toots by day"
+      sql = <<EOQ
+        select
+          to_char(created_at, 'MM-DD') as day,
+          count(*)
+        from
+          mastodon_toot
+        where
+          timeline = 'me'
+        group by
+          day
+        order by day
+      EOQ
+    }
+
+    chart {
+      width = 6
+      type = "donut"
+      title = "my toots by type"
+      sql = <<EOQ
+        with data as (
+          select
+            case
+              when reblog -> 'url' is not null then 'boosted'
+              when in_reply_to_account_id is not null then 'in_reply_to'
+              else 'original'
+            end as type
+          from
+            mastodon_toot
+          where
+            timeline = 'me'
+        )
+        select
+          type,
+          count(*)
+        from
+          data
+        group by
+          type
+        order by
+          count desc
+      EOQ
+    }
 
   container { 
 
     table {
-      title = "home: recent toots"
-      query = query.timeline
-      args = [ "home" ]
+      query = query.my_toots
       column "toot" {
         wrap = "all"
       }

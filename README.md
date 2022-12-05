@@ -13,6 +13,8 @@ Mastodon dashboards answer questions like:
 - On the federated timeline?
 - Recent toots on my lists?
 - Which toots are my favorites?
+- How many toots have I posted? 
+- Of toots have I posted, how many are original vs boosts vs replies?
 - Who am I following (and which lists, if any, are they on)?
 - Who are my followers (and which lists, if any, are they on) ?
 - Which hashtags match `science`?

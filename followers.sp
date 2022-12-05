@@ -22,6 +22,8 @@ Followers
 🞄
 [Local](${local.host}/mastodon.dashboard.Local)
 🞄
+[Me](${local.host}/mastodon.dashboard.Me)
+🞄
 [Notification](${local.host}/mastodon.dashboard.Notification)
 🞄
 [PeopleSearch](${local.host}/mastodon.dashboard.PeopleSearch)

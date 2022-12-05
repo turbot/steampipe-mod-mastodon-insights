@@ -22,6 +22,8 @@ dashboard "Notification" {
 🞄
 [Local](${local.host}/mastodon.dashboard.Local)
 🞄
+[Me](${local.host}/mastodon.dashboard.Me)
+🞄
 Notification
 🞄
 [PeopleSearch](${local.host}/mastodon.dashboard.PeopleSearch)
