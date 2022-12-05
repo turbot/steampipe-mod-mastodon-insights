@@ -11,8 +11,9 @@ Mastodon dashboards answer questions like:
 - Recent toots on my home timeline?
 - On the local timeline?
 - On the federated timeline?
-- Who am I following?
-- Who are my followers?
+- Which toots are my favorites?
+- Who am I following (and which lists, if any, are they on)?
+- Who are my followers (and which lists, if any, are they on) ?
 - Which hashtags match `science`?
 - Which toots on the home timeline match `federation`?
 - Which accounts match `alice`?
