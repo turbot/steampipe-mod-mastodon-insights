@@ -226,18 +226,35 @@ query "search_people" {
 
 query "followers" {
   sql = <<EOQ
+    with data as (
+      select
+        l.title as list,
+        a.*
+      from
+        mastodon_list l
+      join
+        mastodon_list_account a
+      on
+        l.id = a.list_id
+    )
     select
-      url,
-      display_name,
-      to_char(created_at, 'YYYY-MM-DD') as created_at,
-      followers_count as followers,
-      following_count as following,
-      statuses_count as toots,
-      note
+      d.list,
+      f.url,
+      f.username,
+      f.display_name,
+      to_char(f.created_at, 'YYYY-MM-DD') as created_at,
+      f.followers_count as followers,
+      f.following_count as following,
+      f.statuses_count as toots,
+      f.note
     from
-      mastodon_followers
+      mastodon_followers f
+    left join
+      data d
+    on
+      f.id = d.id
     order by
-      followers_count desc
+      d.list, followers desc
   EOQ
 }
 
@@ -255,32 +272,37 @@ Meanwhile, see query.search_people, this approach is practical there if the quer
 */
 query "following" {
   sql = <<EOQ
-    with following as (
+    with data as (
       select
-        *
+        l.title as list,
+        a.*
       from
-        mastodon_following
+        mastodon_list l
+      join
+        mastodon_list_account a
+      on
+        l.id = a.list_id
     )
     select
+      d.list,
       f.url,
+      f.username,
       f.display_name,
-      --m.followed_by,
       to_char(f.created_at, 'YYYY-MM-DD') as created_at,
       f.followers_count as followers,
       f.following_count as following,
       f.statuses_count as toots,
       f.note
-    from
-      following f
-    --join
-    --  mastodon_relationship m
-    --on
-    --  f.id = m.id
+    from 
+      mastodon_following f
+    left join
+      data d
+    on
+      f.id = d.id
     order by
-      created_at desc
+      d.list, followers desc
   EOQ
 }
-
 
 query "notification" {
   sql = <<EOQ
@@ -316,9 +338,23 @@ query "notification" {
   EOQ
 }
 
+query "list" {
+  sql = <<EOQ
+    select
+      l.title as list,
+      a.*
+    from
+      mastodon_list l
+    join
+      mastodon_list_account a
+    on
+      l.id = a.list_id
+  EOQ
+}
+
 query "users_by_wordcount" {
   sql = <<EOQ
-    with toots as (
+    with toots as (o
       select
         *,
         regexp_matches(content, '\s+', 'g')  as match
