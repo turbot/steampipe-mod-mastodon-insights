@@ -351,6 +351,7 @@ query "list" {
       l.list,
       t.user_name,
       t.display_name,
+      t.url,
       to_char(t.created_at, 'MM-DD HH24:MI') as created_at,
       t.content as toot
     from 
