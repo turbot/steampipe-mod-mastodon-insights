@@ -335,6 +335,7 @@ query "notification" {
       r.id = n.account_id
     order by
       n.created_at desc
+    limit ${local.limit}
   EOQ
 }
 
