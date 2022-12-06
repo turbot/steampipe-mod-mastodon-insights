@@ -365,17 +365,17 @@ query "list" {
       where
         timeline = 'list'
     )
-    select distinct on (list, user_name, display_name)
+    select distinct on (list, user_name, display_name, hour)
       list,
       user_name,
       display_name,
       url,
-      created_at,
+      hour,
       toot
     from
       data
     order by
-      list, user_name, display_name, hour desc
+      hour desc, list, user_name, display_name
   EOQ
 }
 
