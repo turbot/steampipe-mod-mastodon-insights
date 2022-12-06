@@ -346,24 +346,36 @@ query "list" {
         title as list
       from
         mastodon_list
+    ),
+    data as (
+      select
+        l.list,
+        t.user_name,
+        t.display_name,
+        t.url,
+        to_char(t.created_at, 'MM-DD HH24:MI') as created_at,
+        to_char(t.created_at, 'MM-DD HH24') as hour,
+        t.content as toot
+      from
+        mastodon_toot t
+      join
+        list_ids l
+      on
+        l.id = t.list_id
+      where
+        timeline = 'list'
     )
-    select
-      l.list,
-      t.user_name,
-      t.display_name,
-      t.url,
-      to_char(t.created_at, 'MM-DD HH24:MI') as created_at,
-      t.content as toot
-    from 
-      mastodon_toot t
-    join
-      list_ids l
-    on
-      l.id = t.list_id
-    where
-      timeline = 'list'
+    select distinct on (list, user_name, display_name)
+      list,
+      user_name,
+      display_name,
+      url,
+      created_at,
+      toot
+    from
+      data
     order by
-      list, t.created_at desc
+      list, user_name, display_name, hour desc
   EOQ
 }
 
