@@ -118,7 +118,6 @@ query "favorite" {
         end as url
       from
         mastodon_favorite
-      limit ${local.limit}
     )
     select
       account,
@@ -131,6 +130,7 @@ query "favorite" {
       toots
     order by
       created_at desc
+    limit ${local.limit}
   EOQ
 }
 
