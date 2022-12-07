@@ -6,7 +6,6 @@ dashboard "TagSearch" {
 
   container {
     text {
-      width = 8
       value = <<EOT
 [Direct](${local.host}/mastodon.dashboard.Direct)
 🞄

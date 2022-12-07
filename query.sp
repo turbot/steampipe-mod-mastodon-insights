@@ -365,6 +365,9 @@ query "list" {
         l.id = t.list_id
       where
         timeline = 'list'
+        and l.list = $1
+        and t.reblog -> 'url' is null
+        and t.in_reply_to_account_id is null
     )
     select distinct on (list, user_name, display_name, hour)
       list,
@@ -378,6 +381,7 @@ query "list" {
     order by
       hour desc, list, user_name, display_name
   EOQ
+  param "title" {}
 }
 
 query "my_toots" {

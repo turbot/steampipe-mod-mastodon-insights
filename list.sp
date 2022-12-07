@@ -6,7 +6,6 @@ dashboard "List" {
 
   container {
     text {
-      width = 8
       value = <<EOT
 [Direct](${local.host}/mastodon.dashboard.Direct)
 🞄
@@ -48,12 +47,29 @@ List
       sql = "select distinct _ctx ->> 'connection_name' as server from mastodon_weekly_activity"
     }
 
+    input "list" {
+      type = "select"
+      width = 2
+      title = "search home timeline"
+      sql = <<EOQ
+        select
+          title as label,
+          title as value
+        from
+          mastodon_list
+        order by
+          title
+      EOQ
+    }
+
+
   }
 
   container {
 
     table {
       query = query.list
+      args = [ self.input.list ]
       column "toot" {
         wrap = "all"
       }

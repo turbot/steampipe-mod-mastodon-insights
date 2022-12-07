@@ -6,7 +6,6 @@ dashboard "Me" {
 
   container {
     text {
-      width = 8
       value = <<EOT
 [Direct](${local.host}/mastodon.dashboard.Direct)
 🞄

@@ -6,7 +6,6 @@ dashboard "Direct" {
 
   container {
     text {
-      width = 8
       value = <<EOT
 Direct
 🞄
