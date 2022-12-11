@@ -41,42 +41,70 @@ Me
   }
 
   container {
+
     card {
       width = 4
       sql = "select distinct _ctx ->> 'connection_name' as server from mastodon_weekly_activity"
     }
 
-    card {
-      
-      width = 4
+    input "limit" {
+      width = 2
+      title = "limit"
       sql = <<EOQ
-        select count(*) as "my toots" from mastodon_toot where timeline = 'me'
+        with limits(label, value) as (
+          values 
+            ( '50', 50),
+            ( '100', 100),
+            ( '200', 200),
+            ( '500', 500)
+        )
+        select
+          label,
+          value
+        from 
+          limits
+        order by 
+          value
       EOQ
-    }
+    }    
+
 
   }
 
     chart {
       width = 6
       title = "my toots by day"
+      args = [ self.input.limit ]
       sql = <<EOQ
-        select
-          to_char(created_at, 'MM-DD') as day,
-          count(*)
+        with data as (
+          select
+            to_char(created_at, 'MM-DD') as day
+          from
+            mastodon_toot
+          where
+            timeline = 'me'
+          order by
+            day desc
+          limit $1
+        )
+        select 
+          day,
+          count(*)    
         from
-          mastodon_toot
-        where
-          timeline = 'me'
+          data
         group by
           day
-        order by day
+        order by
+          day
       EOQ
+      param "limit" {}
     }
 
     chart {
       width = 6
       type = "donut"
       title = "my toots by type"
+      args = [ self.input.limit ]
       sql = <<EOQ
         with data as (
           select
@@ -99,12 +127,15 @@ Me
           type
         order by
           count desc
+        limit $1
       EOQ
+      param "limit" {}
     }
 
   container { 
 
     table {
+      args = [ self.input.limit ]
       query = query.my_toots
       column "toot" {
         wrap = "all"
