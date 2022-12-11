@@ -242,7 +242,6 @@ query "followers" {
     select
       d.list,
       f.url,
-      f.username,
       f.display_name,
       to_char(f.created_at, 'YYYY-MM-DD') as created_at,
       f.followers_count as followers,
@@ -288,7 +287,6 @@ query "following" {
     select
       d.list,
       f.url,
-      f.username,
       f.display_name,
       to_char(f.created_at, 'YYYY-MM-DD') as created_at,
       f.followers_count as followers,
