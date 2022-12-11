@@ -50,21 +50,19 @@ Favorites
       width = 2
       title = "limit"
       sql = <<EOQ
-        with limits(label, value) as (
+        with limits(label) as (
           values 
-            ( '20', 20),
-            ( '50', 50),
-            ( '100', 100),
-            ( '200', 200),
-            ( '500', 500)
+            ( '20' ),
+            ( '50' ),
+            ( '100' ),
+            ( '200' ),
+            ( '500' )
         )
         select
           label,
-          value
+          label::int as value
         from 
           limits
-        order by 
-          value
       EOQ
     }    
 
