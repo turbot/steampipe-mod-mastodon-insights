@@ -118,6 +118,7 @@ query "favorite" {
         end as url
       from
         mastodon_favorite
+      limit $1
     )
     select
       account,
@@ -130,8 +131,8 @@ query "favorite" {
       toots
     order by
       created_at desc
-    limit ${local.limit}
   EOQ
+  param "limit" {}
 }
 
 /*
@@ -335,8 +336,10 @@ query "notification" {
       r.id = n.account_id
     order by
       n.created_at desc
-    limit ${local.limit}
+    limit $1
   EOQ
+  param "limit" {}
+
 }
 
 query "list" {
@@ -411,7 +414,9 @@ query "my_toots" {
         timeline = 'me'
       order by
         created_at desc
+      limit $1
   EOQ
+  param "limit" {}
 }
 
 query "users_by_wordcount" {
