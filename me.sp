@@ -85,7 +85,7 @@ Me
             timeline = 'me'
           order by
             day desc
-          limit $1
+          limit ${local.limit}
         )
         select 
           day,
@@ -97,7 +97,6 @@ Me
         order by
           day
       EOQ
-      param "limit" {}
     }
 
     chart {
@@ -127,9 +126,8 @@ Me
           type
         order by
           count desc
-        limit $1
+        limit ${local.limit}
       EOQ
-      param "limit" {}
     }
 
   container { 

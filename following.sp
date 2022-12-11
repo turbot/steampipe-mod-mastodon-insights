@@ -83,7 +83,7 @@ Following
         )
         select
           case
-            when domain is null then $1
+            when domain is null then '${local.server}'
             else domain
           end as domain,
           count(*)
@@ -95,9 +95,6 @@ Following
           count desc
         limit 15
       EOQ
-      param "server" {
-        default = local.server
-      }
     }
 
 
