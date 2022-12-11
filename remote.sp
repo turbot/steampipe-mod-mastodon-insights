@@ -45,6 +45,28 @@ Remote
       width = 4
       sql = "select distinct _ctx ->> 'connection_name' as server from mastodon_weekly_activity"
     }
+
+    input "limit" {
+      width = 2
+      title = "limit"
+      sql = <<EOQ
+        with limits(label, value) as (
+          values 
+            ( '50', 50),
+            ( '100', 100),
+            ( '200', 200),
+            ( '500', 500)
+        )
+        select
+          label,
+          value
+        from 
+          limits
+        order by 
+          value
+      EOQ
+    }    
+
   }
 
   container { 
@@ -52,7 +74,7 @@ Remote
     table {
       title = "remote: recent toots"
       query = query.timeline
-      args = [ "remote" ]
+      args = [ "remote", self.input.limit ]
       column "toot" {
         wrap = "all"
       }

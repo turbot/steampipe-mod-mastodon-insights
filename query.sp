@@ -27,7 +27,7 @@ query "timeline" {
         mastodon_toot
       where
         timeline = $1
-      limit ${local.limit}
+      limit $2
     )
     select
       account,
@@ -42,6 +42,7 @@ query "timeline" {
       created_at desc
   EOQ
   param "timeline" {}
+  param "limit" {}
 }
 
 query "search_status" {
