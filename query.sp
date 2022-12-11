@@ -354,7 +354,6 @@ query "list" {
         t.user_name,
         t.display_name,
         t.url,
-        to_char(t.created_at, 'MM-DD HH24:MI') as created_at,
         to_char(t.created_at, 'MM-DD HH24') as hour,
         t.content as toot
       from
@@ -366,10 +365,10 @@ query "list" {
       where
         timeline = 'list'
         and l.list = $1
-        and t.reblog -> 'url' is null
-        and t.in_reply_to_account_id is null
+        and t.reblog -> 'url' is null -- only original posts
+        and t.in_reply_to_account_id is null -- only original posts
     )
-    select distinct on (list, user_name, display_name, hour)
+    select distinct on (list, user_name, display_name, hour) -- only one per list/user/hour
       list,
       user_name,
       display_name,
