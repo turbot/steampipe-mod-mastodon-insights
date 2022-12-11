@@ -46,7 +46,7 @@ Rate
       width = 6
       sql = <<EOQ
         select
-          _ctx ->> 'connection_name' as server,
+          _ctx ->> 'connection_name' as connection,
           max,
           remaining,
           to_char(reset, 'HH24:MI') as reset
