@@ -16,7 +16,7 @@ query "timeline" {
           else ''
         end as boosted,
         case
-          when in_reply_to_account_id is not null then '🡼 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
+          when in_reply_to_account_id is not null then ' 🡼 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
           else ''
         end as in_reply_to,
         case
@@ -31,10 +31,12 @@ query "timeline" {
     )
     select
       account,
-      person,
-      boosted 🢁,
-      toot,
-      in_reply_to 🡼,
+      person || 
+        case 
+          when in_reply_to is null then ''
+          else in_reply_to
+        end as person,
+      boosted || ' ' || toot as toot,
       url
     from
       toots
@@ -63,7 +65,7 @@ query "search_status" {
           else ''
         end as boosted,
         case
-          when in_reply_to_account_id is not null then '🡼 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
+          when in_reply_to_account_id is not null then ' 🡼 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
           else ''
         end as in_reply_to,
         case
@@ -79,10 +81,12 @@ query "search_status" {
     )
     select
       account,
-      person,
-      boosted 🢁,
-      toot,
-      in_reply_to 🡼,
+      person || 
+        case 
+          when in_reply_to is null then ''
+          else in_reply_to
+        end as person,
+      boosted || ' ' || toot as toot,
       url
     from
       toots
@@ -110,7 +114,7 @@ query "favorite" {
           else ''
         end as boosted,
         case
-          when in_reply_to_account_id is not null then '🡼 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
+          when in_reply_to_account_id is not null then ' 🡼 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
           else ''
         end as in_reply_to,
         case
@@ -123,10 +127,12 @@ query "favorite" {
     )
     select
       account,
-      person,
-      boosted 🢁,
-      toot,
-      in_reply_to 🡼,
+      person || 
+        case 
+          when in_reply_to is null then ''
+          else in_reply_to
+        end as person,
+      boosted || ' ' || toot as toot,
       url
     from
       toots
@@ -254,8 +260,6 @@ query "followers" {
       data d
     on
       f.id = d.id
-    order by
-      d.list, followers desc
   EOQ
 }
 
@@ -387,7 +391,9 @@ query "list" {
 
 query "my_toots" {
   sql = <<EOQ
+    with data as (
       select
+        account_url as account,
         to_char(created_at, 'MM-DD HH24:MI') as created_at,
         case
           when reblog -> 'url' is not null then '🢁'
@@ -400,7 +406,7 @@ query "my_toots" {
             reblog_content
         end as toot,
         case
-          when in_reply_to_account_id is not null then '🡼 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
+          when in_reply_to_account_id is not null then ' 🡼 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
           else ''
         end as in_reply_to,
         case
@@ -414,6 +420,13 @@ query "my_toots" {
       order by
         created_at desc
       limit $1
+    )
+    select
+      account,
+      boosted || ' ' || toot as toot,
+      url
+    from
+      data
   EOQ
   param "limit" {}
 }
