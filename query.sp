@@ -244,22 +244,30 @@ query "followers" {
         mastodon_list_account a
       on
         l.id = a.list_id
+    ),
+    combined as (
+      select
+        d.list,
+        f.url,
+        case when f.display_name = '' then null else f.display_name end as display_name,
+        to_char(f.created_at, 'YYYY-MM-DD') as created_at,
+        f.followers_count as followers,
+        f.following_count as following,
+        f.statuses_count as toots,
+        f.note
+      from 
+        mastodon_followers f
+      left join
+        data d
+      on
+        f.id = d.id
     )
-    select
-      d.list,
-      f.url,
-      f.display_name,
-      to_char(f.created_at, 'YYYY-MM-DD') as created_at,
-      f.followers_count as followers,
-      f.following_count as following,
-      f.statuses_count as toots,
-      f.note
+    select 
+      *
     from
-      mastodon_followers f
-    left join
-      data d
-    on
-      f.id = d.id
+      combined
+    order by
+      display_name nulls last
   EOQ
 }
 
@@ -287,24 +295,30 @@ query "following" {
         mastodon_list_account a
       on
         l.id = a.list_id
+    ),
+    combined as (
+      select
+        d.list,
+        f.url,
+        case when f.display_name = '' then null else f.display_name end as display_name,
+        to_char(f.created_at, 'YYYY-MM-DD') as created_at,
+        f.followers_count as followers,
+        f.following_count as following,
+        f.statuses_count as toots,
+        f.note
+      from 
+        mastodon_following f
+      left join
+        data d
+      on
+        f.id = d.id
     )
-    select
-      d.list,
-      f.url,
-      f.display_name,
-      to_char(f.created_at, 'YYYY-MM-DD') as created_at,
-      f.followers_count as followers,
-      f.following_count as following,
-      f.statuses_count as toots,
-      f.note
-    from 
-      mastodon_following f
-    left join
-      data d
-    on
-      f.id = d.id
+    select 
+      *
+    from
+      combined
     order by
-      d.list, followers desc
+      display_name nulls last
   EOQ
 }
 
