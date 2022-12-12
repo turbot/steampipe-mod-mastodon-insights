@@ -73,6 +73,9 @@ Remote
       title = "remote: recent toots"
       query = query.timeline
       args = [ "remote", self.input.limit ]
+      column "person" {
+        wrap = "all"
+      }
       column "toot" {
         wrap = "all"
       }

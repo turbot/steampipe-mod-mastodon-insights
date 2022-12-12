@@ -16,7 +16,7 @@ query "timeline" {
           else ''
         end as boosted,
         case
-          when in_reply_to_account_id is not null then ' 🡼 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
+          when in_reply_to_account_id is not null then ' 🢂 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
           else ''
         end as in_reply_to,
         case
@@ -65,7 +65,7 @@ query "search_status" {
           else ''
         end as boosted,
         case
-          when in_reply_to_account_id is not null then ' 🡼 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
+          when in_reply_to_account_id is not null then ' 🢂 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
           else ''
         end as in_reply_to,
         case
@@ -114,7 +114,7 @@ query "favorite" {
           else ''
         end as boosted,
         case
-          when in_reply_to_account_id is not null then ' 🡼 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
+          when in_reply_to_account_id is not null then ' 🢂 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
           else ''
         end as in_reply_to,
         case
@@ -406,7 +406,7 @@ query "my_toots" {
             reblog_content
         end as toot,
         case
-          when in_reply_to_account_id is not null then ' 🡼 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
+          when in_reply_to_account_id is not null then ' 🢂 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
           else ''
         end as in_reply_to,
         case

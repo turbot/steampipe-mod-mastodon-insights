@@ -75,6 +75,9 @@ Favorites
       args = [ self.input.limit ]
       title = "favorites"
       query = query.favorite
+      column "person" {
+        wrap = "all"
+      }
       column "toot" {
         wrap = "all"
       }

@@ -75,7 +75,13 @@ Home
       title = "home: recent toots"
       query = query.timeline
       args = [ "home", self.input.limit ]
+      column "person" {
+        wrap = "all"
+      }
       column "toot" {
+        wrap = "all"
+      }
+      column "url" {
         wrap = "all"
       }
 

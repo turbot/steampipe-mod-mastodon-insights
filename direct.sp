@@ -73,6 +73,9 @@ Direct
       title = "direct: recent toots"
       query = query.timeline
       args = [ "direct", self.input.limit ]
+      column "person" {
+        wrap = "all"
+      }
       column "toot" {
         wrap = "all"
       }

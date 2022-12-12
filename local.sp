@@ -73,6 +73,9 @@ Local
       title = "local: recent toots"
       query = query.timeline
       args = [ "local", self.input.limit ]
+      column "person" {
+        wrap = "all"
+      }
       column "toot" {
         wrap = "all"
       }
