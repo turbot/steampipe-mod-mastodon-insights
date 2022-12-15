@@ -340,8 +340,8 @@ query "notification" {
       n.category,
       n.account_url,
       n.display_name,
-      r.following,
-      r.followed_by,
+      case when r.following then '✔️' else '' end as following,
+      case when r.followed_by then '✔️' else '' end as followed_by,
       n.created_at,
       n.status_url,
       substring(n.status_content from 1 for 20) as toot
