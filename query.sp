@@ -3,7 +3,7 @@ query "timeline" {
     with toots as (
       select
         account_url as account,
-        display_name as person,
+        case when display_name = '' then user_name else display_name end as person,
         case
           when reblog -> 'url' is null then
             content
@@ -52,7 +52,7 @@ query "search_status" {
     with toots as (
       select
         account_url as account,
-        display_name as person,
+        case when display_name = '' then user_name else display_name end as person,
         case
           when reblog -> 'url' is null then
             content
@@ -101,7 +101,7 @@ query "favorite" {
     with toots as (
       select
         account_url as account,
-        display_name as person,
+        case when display_name = '' then user_name else display_name end as person,
         case
           when reblog -> 'url' is null then
             content
@@ -198,7 +198,7 @@ query "search_people" {
       select
         id,
         url,
-        display_name as person,
+        case when display_name = '' then username else display_name end as person,
         to_char(created_at, 'YYYY-MM-DD') as created_at,
         followers_count,
         following_count,
@@ -209,7 +209,7 @@ query "search_people" {
       where 
         query = $1
       order by
-        display_name
+        person
     )
     select
       d.url,
@@ -249,7 +249,7 @@ query "followers" {
       select
         d.list,
         f.url,
-        case when f.display_name = '' then null else f.display_name end as display_name,
+        case when f.display_name = '' then f.username else f.display_name end as person,
         to_char(f.created_at, 'YYYY-MM-DD') as created_at,
         f.followers_count as followers,
         f.following_count as following,
@@ -267,7 +267,7 @@ query "followers" {
     from
       combined
     order by
-      display_name nulls last
+      person
   EOQ
 }
 
@@ -300,7 +300,7 @@ query "following" {
       select
         d.list,
         f.url,
-        case when f.display_name = '' then null else f.display_name end as display_name,
+        case when f.display_name = '' then f.username else f.display_name end as person,
         to_char(f.created_at, 'YYYY-MM-DD') as created_at,
         f.followers_count as followers,
         f.following_count as following,
@@ -318,7 +318,7 @@ query "following" {
     from
       combined
     order by
-      display_name nulls last
+      person
   EOQ
 }
 
@@ -329,7 +329,7 @@ query "notification" {
         category,
         account_url,
         account_id,
-        display_name,
+        display_name as person,
         to_char(created_at, 'MM-DD HH24:MI') as created_at,
         status_url,
         status_content
@@ -339,7 +339,7 @@ query "notification" {
     select
       n.category,
       n.account_url,
-      n.display_name,
+      n.person,
       case when r.following then '✔️' else '' end as following,
       case when r.followed_by then '✔️' else '' end as followed_by,
       n.created_at,
@@ -372,7 +372,7 @@ query "list" {
       select
         l.list,
         t.user_name,
-        t.display_name,
+        case when t.display_name = '' then t.user_name else t.display_name end as person,
         t.url,
         to_char(t.created_at, 'MM-DD HH24') as hour,
         t.content as toot
@@ -388,17 +388,15 @@ query "list" {
         and t.reblog -> 'url' is null -- only original posts
         and t.in_reply_to_account_id is null -- only original posts
     )
-    select distinct on (list, user_name, display_name, hour) -- only one per list/user/hour
-      list,
-      user_name,
-      display_name,
+    select distinct on (list, user_name, person, hour) -- only one per list/user/hour
+      person,
       url,
       hour,
       toot
     from
       data
     order by
-      hour desc, list, user_name, display_name
+      hour desc, list, person
   EOQ
   param "title" {}
 }
@@ -445,35 +443,3 @@ query "my_toots" {
   param "limit" {}
 }
 
-query "users_by_wordcount" {
-  sql = <<EOQ
-    with toots as (o
-      select
-        *,
-        regexp_matches(content, '\s+', 'g')  as match
-      from 
-        mastodon_local_toot
-      limit 300
-    ),
-    words as (
-      select
-        id,
-        user_name,
-        display_name,
-        created_at,
-        cardinality(array_agg(match)) as words
-      from 
-        toots
-      where
-        content != ''
-      group by
-        id, user_name, display_name, created_at
-    )
-    select
-      *
-    from
-      words
-    order by
-      created_at desc
-  EOQ
-}
