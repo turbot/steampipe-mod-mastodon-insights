@@ -214,8 +214,8 @@ query "search_people" {
     select
       d.url,
       d.person,
-      r.following,
-      r.followed_by,
+      case when r.following then '✔️' else '' end as following,
+      case when r.followed_by then '✔️' else '' end as followed_by,
       d.created_at,
       d.followers_count,
       d.following_count,
