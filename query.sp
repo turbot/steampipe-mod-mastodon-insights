@@ -371,7 +371,6 @@ query "list" {
     data as (
       select
         l.list,
-        t.user_name,
         case when t.display_name = '' then t.user_name else t.display_name end as person,
         t.url,
         to_char(t.created_at, 'MM-DD HH24') as hour,
@@ -388,7 +387,7 @@ query "list" {
         and t.reblog -> 'url' is null -- only original posts
         and t.in_reply_to_account_id is null -- only original posts
     )
-    select distinct on (list, user_name, person, hour) -- only one per list/user/hour
+    select distinct on (list, person, hour) -- only one per list/user/hour
       person,
       url,
       hour,
