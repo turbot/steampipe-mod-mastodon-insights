@@ -44,6 +44,7 @@ query "timeline" {
         created_at desc
     )
     select
+      row_number() over(),
       account,
       person ||
         case
@@ -361,7 +362,7 @@ query "notification" {
       case when r.followed_by then '✔️' else '' end as followed_by,
       n.created_at,
       n.status_url,
-      substring(n.status_content from 1 for 20) as toot
+      n.status_content as toot
     from
       notifications n
     join

@@ -64,7 +64,7 @@ Home
           limits
       EOQ
     }
-
+    
     input "boosts" {
       width = 2
       title = "boosts"
@@ -84,7 +84,7 @@ Home
     }
 
   }
-
+  
   container { 
 
     table {

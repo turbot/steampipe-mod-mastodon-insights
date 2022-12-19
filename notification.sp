@@ -77,6 +77,15 @@ Notification
       args = [ self.input.limit ]
       title = "notifications"
       query = query.notification
+      column "status_url" {
+        wrap = "all"
+      }
+      column "account_url" {
+        wrap = "all"
+      }
+      column "toot" {
+        wrap = "all"
+      }
     }
 
   }
