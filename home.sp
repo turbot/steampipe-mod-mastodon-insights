@@ -63,18 +63,34 @@ Home
         from 
           limits
       EOQ
-    }    
+    }
 
+    input "boosts" {
+      width = 2
+      title = "boosts"
+      sql = <<EOQ
+        with boosts(label, value) as (
+          values
+            ( 'include', 'include' ),
+            ( 'hide', ' ' ),
+            ( 'only', '🢁' )
+        )
+        select
+          label,
+          value
+        from
+          boosts
+      EOQ
+    }
 
   }
-
 
   container { 
 
     table {
       title = "home: recent toots"
       query = query.timeline
-      args = [ "home", self.input.limit ]
+      args = [ "home", self.input.limit, self.input.boosts ]
       column "person" {
         wrap = "all"
       }

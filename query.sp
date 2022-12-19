@@ -13,7 +13,7 @@ query "timeline" {
         to_char(created_at, 'MM-DD HH24:MI') as created_at,
         case
           when reblog -> 'url' is not null then '🢁'
-          else ''
+          else ' '
         end as boosted,
         case
           when in_reply_to_account_id is not null then ' 🢂 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
@@ -28,23 +28,39 @@ query "timeline" {
       where
         timeline = $1
       limit $2
+    ),
+    boosted as (
+      select
+        $3 as boost,
+        boosted,
+        account,
+        in_reply_to,
+        person,
+        toot,
+        url
+      from
+        toots
+      order by
+        created_at desc
     )
     select
       account,
-      person || 
-        case 
-          when in_reply_to is null then ''
-          else in_reply_to
-        end as person,
+        person ||
+          case
+            when in_reply_to is null then ''
+            else in_reply_to
+          end as person,
       boosted || ' ' || toot as toot,
       url
     from
-      toots
-    order by
-      created_at desc
+      boosted
+    where
+      boost = boosted
+      or boost = 'include'
   EOQ
   param "timeline" {}
   param "limit" {}
+  param "boost" {}
 }
 
 query "search_status" {
