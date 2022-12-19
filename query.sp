@@ -45,11 +45,11 @@ query "timeline" {
     )
     select
       account,
-        person ||
-          case
-            when in_reply_to is null then ''
-            else in_reply_to
-          end as person,
+      person ||
+        case
+          when in_reply_to is null then ''
+          else in_reply_to
+        end as person,
       boosted || ' ' || toot as toot,
       url
     from
@@ -57,6 +57,7 @@ query "timeline" {
     where
       boost = boosted
       or boost = 'include'
+      or boost = 'n/a'
   EOQ
   param "timeline" {}
   param "limit" {}

@@ -85,7 +85,7 @@ Me
             timeline = 'me'
           order by
             day desc
-          limit ${local.limit}
+          limit $1
         )
         select 
           day,
@@ -126,7 +126,7 @@ Me
           type
         order by
           count desc
-        limit ${local.limit}
+        limit $1
       EOQ
     }
 
