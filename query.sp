@@ -408,9 +408,9 @@ query "list" {
     )
     select distinct on (list, person, hour) -- only one per list/user/hour
       person,
-      url,
       hour,
-      toot
+      toot,
+      url
     from
       data
     order by
