@@ -325,14 +325,14 @@ query "following" {
         f.following_count as following,
         f.statuses_count as toots,
         f.note
-      from 
+      from
         mastodon_following f
       left join
         data d
       on
         f.id = d.id
     )
-    select 
+    select
       *
     from
       combined
@@ -417,6 +417,22 @@ query "list" {
       hour desc, list, person
   EOQ
   param "title" {}
+}
+
+query "list_account" {
+  sql = <<EOQ
+    select
+      l.title as list,
+      array_to_string( array_agg( lower(a.username) order by lower(a.username)), ', ') as people
+    from
+      mastodon_list l
+    join
+      mastodon_list_account a
+    on
+      l.id = a.list_id
+    group by
+      l.title
+  EOQ
 }
 
 query "my_toots" {

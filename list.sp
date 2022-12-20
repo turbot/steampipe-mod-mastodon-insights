@@ -52,28 +52,59 @@ List
       width = 2
       title = "search home timeline"
       sql = <<EOQ
+        with list_account as (
+          select
+            l.title
+          from
+            mastodon_list l
+          join
+              mastodon_list_account a
+          on
+            l.id = a.list_id
+        ),
+        counted as (
+          select
+            title,
+            count(*)
+          from
+            list_account
+          group by
+            title
+          order by
+            title
+        )
         select
-          title as label,
+          title || ' (' || count || ')' as label,
           title as value
         from
-          mastodon_list
+          counted
         order by
           title
       EOQ
     }
-
 
   }
 
   container {
 
     table {
+      width = 8
       query = query.list
       args = [ self.input.list ]
       column "toot" {
         wrap = "all"
       }
     }
+
+    table {
+      width = 4
+      query = query.list_account
+      column "people" {
+        wrap = "all"
+      }
+    }
+
+
   }
 
 }
