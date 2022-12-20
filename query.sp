@@ -44,7 +44,6 @@ query "timeline" {
         created_at desc
     )
     select
-      row_number() over(),
       account,
       person ||
         case
