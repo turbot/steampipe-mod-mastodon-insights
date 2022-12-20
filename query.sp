@@ -362,8 +362,8 @@ query "notification" {
       case when r.following then '✔️' else '' end as following,
       case when r.followed_by then '✔️' else '' end as followed_by,
       n.created_at,
-      n.status_url,
-      n.status_content as toot
+      n.status_content as toot,
+      n.status_url
     from
       notifications n
     join
