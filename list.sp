@@ -68,7 +68,6 @@ List
   container {
 
     table {
-      width = 10
       query = query.list
       args = [ self.input.list ]
       column "toot" {
