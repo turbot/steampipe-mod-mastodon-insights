@@ -187,7 +187,7 @@ query "search_hashtag" {
           sum(uses) as recent_uses
         from 
           data 
-        group 
+        group
           by connection, name, url
       )
       select
@@ -195,16 +195,19 @@ query "search_hashtag" {
         u.name,
         r.guid as link,
         to_char(r.published, 'YYYY-MM-DD') as published,
-        r.categories
+        (
+          select string_agg(trim(JsonString::text, '"'), ', ')
+          from jsonb_array_elements(r.categories) JsonString
+        ) as categories
       from
         uses u
       join
         rss_item r
-      on 
+      on
         r.feed_link = u.feed_link
       where
         recent_uses > 1
-      order by 
+      order by
         recent_uses desc, published desc
     EOQ
     param "search_term" {}
