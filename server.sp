@@ -77,10 +77,17 @@ Server
           week
       EOQ
     }
+  }
 
+  container {
 
-
-  
+    table {
+      width = 6
+      title = "rules"
+      sql = <<EOQ
+        select id as "#", rule from mastodon_rule order by id
+      EOQ
+    }
   }
 
 }
