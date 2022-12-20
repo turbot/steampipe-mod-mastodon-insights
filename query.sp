@@ -232,11 +232,11 @@ query "search_people" {
     select
       d.url,
       d.person,
-      case when r.following then '✔️' else '' end as following,
-      case when r.followed_by then '✔️' else '' end as followed_by,
+      case when r.following then '✔️' else '' end as i_follow,
+      case when r.followed_by then '✔️' else '' end as follows_me,
       d.created_at,
-      d.followers_count,
-      d.following_count,
+      d.followers_count as followers,
+      d.following_count as following,
       d.toots,
       d.note
     from
@@ -245,7 +245,6 @@ query "search_people" {
       mastodon_relationship r
     on
       d.id = r.id
-    order by following desc
   EOQ
   param "search_term" {}
 }
