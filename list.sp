@@ -50,7 +50,6 @@ List
     input "list" {
       type = "select"
       width = 2
-      title = "search home timeline"
       sql = <<EOQ
         with list_account as (
           select
