@@ -14,7 +14,6 @@ dashboard "Relationships" {
   container {
 
     graph {
-      title     = "People belonging to servers + people boosting people"
       type      = "graph"
       sql = <<EOQ
 
@@ -34,8 +33,27 @@ dashboard "Relationships" {
               'server', (regexp_match(account_url, 'https://([^/]+)'))[1]
               ) as properties
             from data
+          ),
+          reblog_server as (
+            select distinct
+              case 
+                when reblog->'account'->>'acct' ~ '@' then (regexp_match(reblog->'account'->>'acct', '@(.+)' ))[1]
+                else 'mastodon.social'
+              end as id,
+              null as from_id,
+              null as to_id,
+              (regexp_match(account_url, 'https://([^/]+)'))[1] as title,
+              jsonb_build_object(
+              'server', (regexp_match(account_url, 'https://([^/]+)'))[1]
+              ) as properties
+            from 
+              data
+            where
+              reblog is not null
           )
           select * from primary_server
+          union
+          select * from reblog_server
         ),
 
         -- node
