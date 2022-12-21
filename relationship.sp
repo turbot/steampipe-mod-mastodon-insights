@@ -14,6 +14,7 @@ dashboard "Relationships" {
   container {
 
     graph {
+      title     = "People belonging to servers + people boosting people"
       type      = "graph"
       sql = <<EOQ
 
@@ -33,27 +34,8 @@ dashboard "Relationships" {
               'server', (regexp_match(account_url, 'https://([^/]+)'))[1]
               ) as properties
             from data
-          ),
-          reblog_server as (
-            select distinct
-              case 
-                when reblog->'account'->>'acct' ~ '@' then (regexp_match(reblog->'account'->>'acct', '@(.+)' ))[1]
-                else 'mastodon.social'
-              end as id,
-              null as from_id,
-              null as to_id,
-              (regexp_match(account_url, 'https://([^/]+)'))[1] as title,
-              jsonb_build_object(
-              'server', (regexp_match(account_url, 'https://([^/]+)'))[1]
-              ) as properties
-            from 
-              data
-            where
-              reblog is not null
           )
           select * from primary_server
-          union
-          select * from reblog_server
         ),
 
         -- node
@@ -78,8 +60,9 @@ dashboard "Relationships" {
           ),
           reblog_person as (
             select
-              case when reblog -> 'account' ->> 'acct' ~ '@' then (regexp_match(reblog -> 'account' ->> 'acct', '^(.+)@'))[1]
-              else reblog -> 'account' ->> 'acct'
+              case 
+                when reblog -> 'account' ->> 'acct' ~ '@' then (regexp_match(reblog -> 'account' ->> 'acct', '^(.+)@'))[1]
+                else reblog -> 'account' ->> 'acct'
               end as id,
               null as from_id,
               null as to_id,
@@ -145,9 +128,12 @@ dashboard "Relationships" {
           )
           select distinct
             null as id,
-            (regexp_match(account_url, '@(.+)'))[1] as from_id,
-            (regexp_match(account_url, 'https://([^/]+)'))[1] as to_id,
-            'belongs to' as title,
+              case 
+                when reblog -> 'account' ->> 'acct' ~ '@' then (regexp_match(reblog -> 'account' ->> 'acct', '^(.+)@'))[1]
+                else reblog -> 'account' ->> 'acct'
+              end as from_id,
+              (regexp_match(account_url, '@(.+)'))[1] as to_id,
+            'boosts' as title,
             jsonb_build_object(
               'account_url', account_url,
               'display_name', display_name
@@ -155,7 +141,7 @@ dashboard "Relationships" {
           from
             data
           where
-              reblog is not null
+            reblog is not null
         ),
 
         person_reply_person as (
@@ -190,6 +176,8 @@ dashboard "Relationships" {
         select * from person_server
         union
         select * from person
+        union
+        select * from person_boost_person
 
     EOQ
     }
