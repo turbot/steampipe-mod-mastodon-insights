@@ -45,33 +45,22 @@ dashboard "Relationships" {
         -- person nodes
 
         person as (
-          with person_data as (
-            select distinct
-              account,
-              (regexp_match(account_url, '@(.+)'))[1] as person,
-              display_name
-            from
-              mastodon_toot
-            where
-              timeline = 'home'
-            limit
-              50
-            )
-            select distinct
-              person as id,
-              null as from_id,
-              null as to_id,
-              person as title,
-              jsonb_build_object(
-                'person', person,
-                'display_name', display_name,
-                'followers', account ->> 'followers_count',
-                'following', account ->> 'following_count',
-                'toots', account ->> 'statuses_count'
-              ) as properties
-            from 
-              person_data
-          ),
+          select distinct
+            (regexp_match(account_url, '@(.+)'))[1] as id,
+            null as to_id,
+            null as from_id,
+            display_name as title,
+            jsonb_build_object(
+              'display_name', display_name,
+              'account_url', account_url
+            ) as properties
+          from
+            mastodon_toot 
+          where
+            timeline = 'home'
+          limit
+            50          
+        ),
 
         -- person-server edges
         
@@ -82,8 +71,8 @@ dashboard "Relationships" {
             (regexp_match(account_url, 'https://([^/]+)'))[1] as to_id,
             'belongs to' as title,
             jsonb_build_object(
-              'person', account_url,
-              'account_url', account_url
+              'account_url', account_url,
+              'display_name', display_name
             ) as properties
           from
             mastodon_toot 
