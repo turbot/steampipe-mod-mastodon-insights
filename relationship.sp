@@ -24,21 +24,18 @@ dashboard "Relationships" {
           with data as (
             select * from mastodon_toot where timeline = 'home' limit 50
           ),
-          server_data as (
-            select
-              (regexp_match(account_url, 'https://([^/]+)'))[1] as server
-            from
-                data
+          primary_server as (
+            select distinct
+              (regexp_match(account_url, 'https://([^/]+)'))[1] as id,
+              null as from_id,
+              null as to_id,
+              (regexp_match(account_url, 'https://([^/]+)'))[1] as title,
+              jsonb_build_object(
+              'server', (regexp_match(account_url, 'https://([^/]+)'))[1]
+              ) as properties
+            from data
           )
-          select distinct
-            server as id,
-            null as from_id,
-            null as to_id,
-            server as title,
-            jsonb_build_object(
-              'server', server
-            ) as properties
-          from server_data
+          select * from primary_server
         ),
 
         -- node
