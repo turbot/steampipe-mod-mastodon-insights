@@ -21,15 +21,14 @@ dashboard "Relationships" {
         -- server nodes
 
         with server as (
-          with server_data as (
+          with data as (
+            select * from mastodon_toot where timeline = 'home' limit 50
+          ),
+          server_data as (
             select
               (regexp_match(account_url, 'https://([^/]+)'))[1] as server
             from
-                mastodon_toot
-            where
-                timeline = 'home'
-            limit
-              50
+                data
           )
           select distinct
             server as id,
@@ -45,6 +44,9 @@ dashboard "Relationships" {
         -- person nodes
 
         person as (
+          with data as (
+            select * from mastodon_toot where timeline = 'home' limit 50
+          )
           select distinct
             (regexp_match(account_url, '@(.+)'))[1] as id,
             null as to_id,
@@ -55,16 +57,15 @@ dashboard "Relationships" {
               'account_url', account_url
             ) as properties
           from
-            mastodon_toot 
-          where
-            timeline = 'home'
-          limit
-            50          
+            data
         ),
 
         -- person-server edges
         
         person_server as (
+          with data as (
+            select * from mastodon_toot where timeline = 'home' limit 50
+          )
           select distinct
             null as id,
             (regexp_match(account_url, '@(.+)'))[1] as from_id,
@@ -75,11 +76,7 @@ dashboard "Relationships" {
               'display_name', display_name
             ) as properties
           from
-            mastodon_toot 
-          where
-            timeline = 'home'
-          limit
-            50          
+            data
         ),
 
         -- person-person edges
@@ -94,7 +91,7 @@ dashboard "Relationships" {
             where
               timeline = 'home'
             limit
-              50
+              10
           ),
           person_data as (
             select
@@ -128,7 +125,7 @@ dashboard "Relationships" {
             where
               timeline = 'home'
             limit
-              50
+              10
           )
           select
             null as id,
