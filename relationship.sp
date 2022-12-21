@@ -23,12 +23,11 @@ dashboard "Relationships" {
         with server as (
           with server_data as (
             select
-              (regexp_match(url, 'https://([^/]+)'))[1] as server
+              (regexp_match(account_url, 'https://([^/]+)'))[1] as server
             from
                 mastodon_toot
             where
                 timeline = 'home'
-                and url != ''
             limit
               50
           )
@@ -47,49 +46,45 @@ dashboard "Relationships" {
 
         person as (
           with person_data as (
-            select
-              *,
-              (regexp_match(url, 'https://([^/]+)'))[1] as server
+            select distinct
+              --account_url as person,
+              (regexp_match(account_url, '@(.+)'))[1] as person,
+              display_name
             from
               mastodon_toot
             where
               timeline = 'home'
             limit
               50
-          )
-          select distinct
-            url,
-            user_name || '@' || server as id,
-            null as from_id,
-            null as to_id,
-            user_name as title,
-            jsonb_build_object(
-              'type', 'person_author',
-              'server', server,
-              'display_name', display_name
-            ) as properties
-          from 
-            person_data
-          where
-            url != ''
-        ),
+            )
+            select distinct
+              person as id,
+              null as from_id,
+              null as to_id,
+              person as title,
+              jsonb_build_object(
+                'person', person
+              ) as properties
+            from 
+              person_data
+          ),
 
         -- person-server edges
         
         person_server as (
           select distinct
             null as id,
-            user_name as from_id,
-            (regexp_match(url, 'https://([^/]+)'))[1] as to_id,
+            (regexp_match(account_url, '@(.+)'))[1] as from_id,
+            (regexp_match(account_url, 'https://([^/]+)'))[1] as to_id,
             'belongs to' as title,
             jsonb_build_object(
-              'user_name', user_name
+              'person', account_url,
+              'account_url', account_url
             ) as properties
           from
             mastodon_toot 
           where
             timeline = 'home'
-            and (regexp_match(url, 'https://([^/]+)'))[1] is not null
           limit
             50          
         ),
@@ -158,9 +153,11 @@ dashboard "Relationships" {
         )
 
 
-        select * from person
+        select * from server
         union
-        select * from person_reply_person
+        select * from person_server
+        union
+        select * from person
 
     EOQ
     }
