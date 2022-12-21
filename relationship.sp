@@ -47,7 +47,7 @@ dashboard "Relationships" {
         person as (
           with person_data as (
             select distinct
-              --account_url as person,
+              account,
               (regexp_match(account_url, '@(.+)'))[1] as person,
               display_name
             from
@@ -63,7 +63,11 @@ dashboard "Relationships" {
               null as to_id,
               person as title,
               jsonb_build_object(
-                'person', person
+                'person', person,
+                'display_name', display_name,
+                'followers', account ->> 'followers_count',
+                'following', account ->> 'following_count',
+                'toots', account ->> 'statuses_count'
               ) as properties
             from 
               person_data
