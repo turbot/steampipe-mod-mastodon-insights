@@ -18,7 +18,7 @@ dashboard "Relationships" {
       type      = "graph"
       sql = <<EOQ
 
-        -- server nodes
+        -- node
 
         with server as (
           with data as (
@@ -41,27 +41,50 @@ dashboard "Relationships" {
           from server_data
         ),
 
-        -- person nodes
+        -- node
 
         person as (
           with data as (
             select * from mastodon_toot where timeline = 'home' limit 50
+          ),
+          primary_person as (
+            select distinct
+              (regexp_match(account_url, '@(.+)'))[1] as id,
+              null as from_id,
+              null as to_id,
+              display_name as title,
+              jsonb_build_object(
+                'display_name', display_name,
+                'account_url', account_url
+              ) as properties
+            from
+              data
+          ),
+          reblog_person as (
+            select
+              case when reblog -> 'account' ->> 'acct' ~ '@' then (regexp_match(reblog -> 'account' ->> 'acct', '^(.+)@'))[1]
+              else reblog -> 'account' ->> 'acct'
+              end as id,
+              null as from_id,
+              null as to_id,
+              reblog -> 'account' ->> display_name as title,
+              jsonb_build_object(
+                'display_name', reblog -> 'account' ->> display_name,
+                'followers', reblog -> 'account' ->> 'followers_count',
+                'following', reblog -> 'account' ->> 'following_count'
+              ) as properties
+            from 
+              data
+            where 
+              reblog is not null
           )
-          select distinct
-            (regexp_match(account_url, '@(.+)'))[1] as id,
-            null as to_id,
-            null as from_id,
-            display_name as title,
-            jsonb_build_object(
-              'display_name', display_name,
-              'account_url', account_url
-            ) as properties
-          from
-            data
+          select  * from primary_person
+          union
+          select * from reblog_person
         ),
 
-        -- person-server edges
-        
+        -- edge
+
         person_server as (
           with data as (
             select * from mastodon_toot where timeline = 'home' limit 50
@@ -79,41 +102,25 @@ dashboard "Relationships" {
             data
         ),
 
-        -- person-person edges
+        -- edge
 
         person_boost_person as (
-          with toot_data as (
-            select
-              *,
-              (regexp_match(url, 'https://([^/]+)'))[1] as server
-            from
-              mastodon_toot
-            where
-              timeline = 'home'
-            limit
-              10
-          ),
-          person_data as (
-            select
-              null as id,
-              user_name || '@' || server as from_id,
-              reblog -> 'account' ->> 'acct' as to_id,
-              'boosts' as title,
-              jsonb_build_object(
-                'reblog', reblog
-              ) as properties
-            from 
-              toot_data
-            where
-              reblog is not null
+          with data as (
+            select * from mastodon_toot where timeline = 'home' limit 50
           )
-          select
-            *
+          select distinct
+            null as id,
+            (regexp_match(account_url, '@(.+)'))[1] as from_id,
+            (regexp_match(account_url, 'https://([^/]+)'))[1] as to_id,
+            'belongs to' as title,
+            jsonb_build_object(
+              'account_url', account_url,
+              'display_name', display_name
+            ) as properties
           from
-            person_data
+            data
           where
-            from_id is not null
-            and to_id is not null
+              reblog is not null
         ),
 
         person_reply_person as (
