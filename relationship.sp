@@ -69,6 +69,7 @@ dashboard "Relationships" {
               null as to_id,
               display_name as title,
               jsonb_build_object(
+                'type', 'primary',
                 'display_name', display_name,
                 'account_url', account_url
               ) as properties
@@ -82,8 +83,9 @@ dashboard "Relationships" {
               end as id,
               null as from_id,
               null as to_id,
-              reblog -> 'account' ->> display_name as title,
+              reblog -> 'account' ->> 'acct' as title,
               jsonb_build_object(
+                'type', 'reblog',
                 'display_name', reblog -> 'account' ->> display_name,
                 'followers', reblog -> 'account' ->> 'followers_count',
                 'following', reblog -> 'account' ->> 'following_count'
@@ -103,18 +105,36 @@ dashboard "Relationships" {
         person_server as (
           with data as (
             select * from mastodon_toot where timeline = 'home' limit 50
+          ),
+          primary_person_server as (
+            select distinct
+              null as id,
+              (regexp_match(account_url, '@(.+)'))[1] as from_id,
+              (regexp_match(account_url, 'https://([^/]+)'))[1] as to_id,
+              'belongs to' as title,
+              jsonb_build_object(
+                'account_url', account_url,
+                'display_name', display_name
+              ) as properties
+            from
+              data
+          ),
+          reblog_person_server as (
+            select distinct
+              null as id,
+              (regexp_match(account_url, '@(.+)'))[1] as from_id,
+              (regexp_match(account_url, 'https://([^/]+)'))[1] as to_id,
+              'belongs to' as title,
+              jsonb_build_object(
+                'account_url', account_url,
+                'display_name', display_name
+              ) as properties
+            from
+              data
           )
-          select distinct
-            null as id,
-            (regexp_match(account_url, '@(.+)'))[1] as from_id,
-            (regexp_match(account_url, 'https://([^/]+)'))[1] as to_id,
-            'belongs to' as title,
-            jsonb_build_object(
-              'account_url', account_url,
-              'display_name', display_name
-            ) as properties
-          from
-            data
+          select * from primary_person_server
+          union 
+          select * from reblog_person_server
         ),
 
         -- edge
