@@ -48,7 +48,9 @@ dashboard "Relationships" {
 
         person as (
 
-          with person_direct_data as (
+          -- author of an original post
+
+          with person_author as (
             with person_data as (
               select
                 *,
@@ -66,6 +68,7 @@ dashboard "Relationships" {
               null as to_id,
               user_name as title,
               jsonb_build_object(
+                'type', 'person direct',
                 'display_name', display_name,
                 'followers', account ->> 'followers_count',
                 'following', account ->> 'following_count'
@@ -76,7 +79,9 @@ dashboard "Relationships" {
               server is not null
           ),
 
-          person_indirect_data as (
+          -- author of a boosted post
+
+          person_boosted as (
             with data as (
               select
                 *
@@ -93,6 +98,7 @@ dashboard "Relationships" {
               null as to_id,
               user_name as title,
               jsonb_build_object(
+                'type', 'person indirect',
                 'display_name', reblog -> 'account' ->> display_name,
                 'followers', reblog -> 'account' ->> 'followers_count',
                 'following', reblog -> 'account' ->> 'following_count'
@@ -101,11 +107,12 @@ dashboard "Relationships" {
               data
             where
               reblog is not null            
+              and user_name = 'donmelton'
           )
 
-          select * from person_direct_data
-          union
-          select * from person_indirect_data
+          select * from person_author
+          --union
+          --select * from person_reblog_mention
 
         ),
 
@@ -130,7 +137,7 @@ dashboard "Relationships" {
 
         -- person-person edges
 
-        person_person as (
+        person_boost_person as (
           with data as (
             select
               *
@@ -147,21 +154,18 @@ dashboard "Relationships" {
             reblog -> 'account' ->> 'username' as to_id,
             'boosts' as title,
             jsonb_build_object(
-              'user_name', user_name
+              'user_name', user_name,
+              'reblog_user_name', reblog -> 'account' ->> 'username'
             ) as properties
           from 
             data
           where
-            reblog is not null          
+            reblog is not null
         )
 
-        select * from server
-        union
-        select * from person
-        union
-        select * from person_server
-        union
-        select * from person_person
+        --select * from person
+        --union
+        select * from person_boost_person
 
     EOQ
     }
