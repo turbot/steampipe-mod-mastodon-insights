@@ -40,86 +40,44 @@ dashboard "Relationships" {
             jsonb_build_object(
               'server', server
             ) as properties
-          from
-            server_data
+          from server_data
         ),
 
         -- person nodes
 
         person as (
-
-          -- author of an original post
-
-          with person_author as (
-            with person_data as (
-              select
-                *,
-                (regexp_match(url, 'https://([^/]+)'))[1] as server
-              from
-                mastodon_toot
-              where
-                timeline = 'home'
-              limit
-                50
-            )
-            select distinct
-              user_name as id,
-              null as from_id,
-              null as to_id,
-              user_name as title,
-              jsonb_build_object(
-                'type', 'person direct',
-                'display_name', display_name,
-                'followers', account ->> 'followers_count',
-                'following', account ->> 'following_count'
-              ) as properties
-            from 
-              person_data
-            where
-              server is not null
-          ),
-
-          -- author of a boosted post
-
-          person_boosted as (
-            with data as (
-              select
-                *
-              from
-                mastodon_toot
-              where
-                timeline = 'home'
-              limit
-                50
-            )
+          with person_data as (
             select
-              reblog -> 'account' ->> 'username' as id,
-              null as from_id,
-              null as to_id,
-              user_name as title,
-              jsonb_build_object(
-                'type', 'person indirect',
-                'display_name', reblog -> 'account' ->> display_name,
-                'followers', reblog -> 'account' ->> 'followers_count',
-                'following', reblog -> 'account' ->> 'following_count'
-              ) as properties
+              *,
+              (regexp_match(url, 'https://([^/]+)'))[1] as server
             from
-              data
+              mastodon_toot
             where
-              reblog is not null            
-              and user_name = 'donmelton'
+              timeline = 'home'
+            limit
+              50
           )
-
-          select * from person_author
-          --union
-          --select * from person_reblog_mention
-
+          select distinct
+            url,
+            user_name || '@' || server as id,
+            null as from_id,
+            null as to_id,
+            user_name as title,
+            jsonb_build_object(
+              'type', 'person_author',
+              'server', server,
+              'display_name', display_name
+            ) as properties
+          from 
+            person_data
+          where
+            url != ''
         ),
 
         -- person-server edges
         
         person_server as (
-          select
+          select distinct
             null as id,
             user_name as from_id,
             (regexp_match(url, 'https://([^/]+)'))[1] as to_id,
@@ -131,6 +89,7 @@ dashboard "Relationships" {
             mastodon_toot 
           where
             timeline = 'home'
+            and (regexp_match(url, 'https://([^/]+)'))[1] is not null
           limit
             50          
         ),
@@ -138,6 +97,41 @@ dashboard "Relationships" {
         -- person-person edges
 
         person_boost_person as (
+          with toot_data as (
+            select
+              *,
+              (regexp_match(url, 'https://([^/]+)'))[1] as server
+            from
+              mastodon_toot
+            where
+              timeline = 'home'
+            limit
+              50
+          ),
+          person_data as (
+            select
+              null as id,
+              user_name || '@' || server as from_id,
+              reblog -> 'account' ->> 'acct' as to_id,
+              'boosts' as title,
+              jsonb_build_object(
+                'reblog', reblog
+              ) as properties
+            from 
+              toot_data
+            where
+              reblog is not null
+          )
+          select
+            *
+          from
+            person_data
+          where
+            from_id is not null
+            and to_id is not null
+        ),
+
+        person_reply_person as (
           with data as (
             select
               *
@@ -151,21 +145,22 @@ dashboard "Relationships" {
           select
             null as id,
             user_name as from_id,
-            reblog -> 'account' ->> 'username' as to_id,
-            'boosts' as title,
+            ( select acct from mastodon_account where id = in_reply_to_account_id )  as to_id,
+            'replies to' as title,
             jsonb_build_object(
               'user_name', user_name,
-              'reblog_user_name', reblog -> 'account' ->> 'username'
+              'reply_to_user_name', ( select acct from mastodon_account where id = in_reply_to_account_id )
             ) as properties
           from 
             data
           where
-            reblog is not null
+            in_reply_to_account_id is not null
         )
 
-        --select * from person
-        --union
-        select * from person_boost_person
+
+        select * from person
+        union
+        select * from person_reply_person
 
     EOQ
     }
