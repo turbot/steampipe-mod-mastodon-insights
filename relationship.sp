@@ -19,11 +19,9 @@ dashboard "Relationships" {
 
   }
 
-
   container {
 
     graph {
-      title     = "People belonging to servers + people boosting people"
       type      = "graph"
       sql = <<EOQ
 
@@ -31,53 +29,64 @@ dashboard "Relationships" {
 
         with server as (
           with data as (
-            select * from mastodon_toot where timeline = 'home' limit 50
+            select * from mastodon_toot where timeline = 'home' limit 20
           ),
           primary_server as (
             select distinct
-              (regexp_match(account_url, 'https://([^/]+)'))[1] as id,
+              server as id,
               null as from_id,
               null as to_id,
-              (regexp_match(account_url, 'https://([^/]+)'))[1] as title,
+              server as title,
               jsonb_build_object(
-              'server', (regexp_match(account_url, 'https://([^/]+)'))[1]
+              'server', server
+              ) as properties
+            from data
+          ),
+          reblog_server as (
+            select distinct
+              reblog_server as id,
+              null as from_id,
+              null as to_id,
+              reblog_server as title,
+              jsonb_build_object(
+              'server', reblog_server
               ) as properties
             from data
           )
           select * from primary_server
+          union
+          select * from reblog_server
         ),
 
         -- node
 
         person as (
           with data as (
-            select * from mastodon_toot where timeline = 'home' limit 50
+            select * from mastodon_toot where timeline = 'home' limit 20
           ),
           primary_person as (
             select distinct
-              (regexp_match(account_url, '@(.+)'))[1] as id,
+              username as id,
               null as from_id,
               null as to_id,
               display_name as title,
               jsonb_build_object(
                 'type', 'primary',
                 'display_name', display_name,
-                'account_url', account_url
+                'server', server
               ) as properties
             from
               data
           ),
           reblog_person as (
             select
-              case 
-                when reblog -> 'account' ->> 'acct' ~ '@' then (regexp_match(reblog -> 'account' ->> 'acct', '^(.+)@'))[1]
-                else reblog -> 'account' ->> 'acct'
-              end as id,
+              reblog_username as id,
               null as from_id,
               null as to_id,
-              reblog -> 'account' ->> 'acct' as title,
+              reblog_username as title,
               jsonb_build_object(
                 'type', 'reblog',
+                'server', reblog_server,
                 'display_name', reblog -> 'account' ->> display_name,
                 'followers', reblog -> 'account' ->> 'followers_count',
                 'following', reblog -> 'account' ->> 'following_count'
@@ -96,13 +105,13 @@ dashboard "Relationships" {
 
         person_server as (
           with data as (
-            select * from mastodon_toot where timeline = 'home' limit 50
+            select * from mastodon_toot where timeline = 'home' limit 20
           ),
           primary_person_server as (
             select distinct
               null as id,
-              (regexp_match(account_url, '@(.+)'))[1] as from_id,
-              (regexp_match(account_url, 'https://([^/]+)'))[1] as to_id,
+              username as from_id,
+              server as to_id,
               'belongs to' as title,
               jsonb_build_object(
                 'account_url', account_url,
@@ -114,8 +123,8 @@ dashboard "Relationships" {
           reblog_person_server as (
             select distinct
               null as id,
-              (regexp_match(account_url, '@(.+)'))[1] as from_id,
-              (regexp_match(account_url, 'https://([^/]+)'))[1] as to_id,
+              reblog_username as from_id,
+              reblog_server as to_id,
               'belongs to' as title,
               jsonb_build_object(
                 'account_url', account_url,
@@ -133,15 +142,12 @@ dashboard "Relationships" {
 
         person_boost_person as (
           with data as (
-            select * from mastodon_toot where timeline = 'home' limit 50
+            select * from mastodon_toot where timeline = 'home' limit 20
           )
           select distinct
             null as id,
-              case 
-                when reblog -> 'account' ->> 'acct' ~ '@' then (regexp_match(reblog -> 'account' ->> 'acct', '^(.+)@'))[1]
-                else reblog -> 'account' ->> 'acct'
-              end as from_id,
-              (regexp_match(account_url, '@(.+)'))[1] as to_id,
+              username as from_id,
+              reblog_username as to_id,
             'boosts' as title,
             jsonb_build_object(
               'account_url', account_url,
@@ -161,8 +167,7 @@ dashboard "Relationships" {
               mastodon_toot 
             where
               timeline = 'home'
-            limit
-              10
+            limit 20
           )
           select
             null as id,
@@ -182,9 +187,9 @@ dashboard "Relationships" {
 
         select * from server
         union
-        select * from person_server
-        union
         select * from person
+        union
+        select * from person_server
         union
         select * from person_boost_person
 
