@@ -3,7 +3,7 @@ query "timeline" {
     with toots as (
       select
         account_url as account,
-        case when display_name = '' then user_name else display_name end as person,
+        case when display_name = '' then username else display_name end as person,
         case
           when reblog -> 'url' is null then
             content
@@ -69,7 +69,7 @@ query "search_status" {
     with toots as (
       select
         account_url as account,
-        case when display_name = '' then user_name else display_name end as person,
+        case when display_name = '' then username else display_name end as person,
         case
           when reblog -> 'url' is null then
             content
@@ -118,7 +118,7 @@ query "favorite" {
     with toots as (
       select
         account_url as account,
-        case when display_name = '' then user_name else display_name end as person,
+        case when display_name = '' then username else display_name end as person,
         case
           when reblog -> 'url' is null then
             content
@@ -390,7 +390,7 @@ query "list" {
     data as (
       select
         l.list,
-        case when t.display_name = '' then t.user_name else t.display_name end as person,
+        case when t.display_name = '' then t.username else t.display_name end as person,
         t.url,
         to_char(t.created_at, 'MM-DD HH24') as hour,
         t.content as toot

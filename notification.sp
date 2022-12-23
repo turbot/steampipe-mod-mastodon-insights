@@ -41,9 +41,16 @@ Notification
   }
 
   container {
-    card {
+
+    table {
       width = 4
-      sql = "select distinct _ctx ->> 'connection_name' as connection from mastodon_weekly_activity"
+      sql = <<EOQ
+      select 
+        _ctx ->> 'connection_name' as connection,
+        name as server
+      from
+        mastodon_server
+      EOQ
     }
 
     input "limit" {
