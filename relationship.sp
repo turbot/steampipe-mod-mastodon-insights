@@ -5,11 +5,20 @@ dashboard "Relationships" {
   }
 
   container {
-    card {
+
+    table {
       width = 4
-      sql = "select distinct _ctx ->> 'connection_name' as server from mastodon_weekly_activity"
+      sql = <<EOQ
+      select 
+        _ctx ->> 'connection_name' as connection,
+        name as server
+      from
+        mastodon_server
+      EOQ
     }
+
   }
+
 
   container {
 
@@ -157,12 +166,12 @@ dashboard "Relationships" {
           )
           select
             null as id,
-            user_name as from_id,
+            username as from_id,
             ( select acct from mastodon_account where id = in_reply_to_account_id )  as to_id,
             'replies to' as title,
             jsonb_build_object(
-              'user_name', user_name,
-              'reply_to_user_name', ( select acct from mastodon_account where id = in_reply_to_account_id )
+              'username', username,
+              'reply_to_username', ( select acct from mastodon_account where id = in_reply_to_account_id )
             ) as properties
           from 
             data

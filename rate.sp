@@ -47,6 +47,7 @@ Rate
       sql = <<EOQ
         select
           _ctx ->> 'connection_name' as connection,
+          ( select name from mastodon_server),
           max,
           remaining,
           to_char(reset, 'HH24:MI') as reset
