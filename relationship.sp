@@ -40,6 +40,7 @@ dashboard "Relationships" {
           mastodon_recent_toots()
         where
           server = selected_server
+          or reblog_server = selected_server
       $$ language sql;
     EOQ
   }
@@ -90,13 +91,25 @@ dashboard "Relationships" {
       category "server" {
         color = "yellow"
         icon = "server"
+        href  = "https://{{.properties.'server'}}"
       }
+
+      category "reblog_server" {
+        color = "brown"
+        icon = "server"
+        href  = "https://{{.properties.'server'}}"
+        }
 
       category "user" {
         color = "orange"
         icon = "user"
+        href  = "https://{{.properties.'server'}}/@{{.properties.'username'}}"
       }
 
+      category "reblog_user" {
+        color = "green"
+        icon = "user"
+      }
 
       node {
       // primary server
@@ -105,10 +118,10 @@ dashboard "Relationships" {
           select
             server as id,
             server as title,
-            'server' as category,
             jsonb_build_object(
-              'server', server
-            ) as properties
+                'server', server
+              ) as properties,
+            'server' as category
           from public.mastodon_recent_toots_for_server($1)
         EOQ
       }
@@ -119,10 +132,10 @@ dashboard "Relationships" {
           select
             reblog_server as id,
             reblog_server as title,
-            'server' as category,
+            'reblog_server' as category,
             jsonb_build_object(
               'server', reblog_server
-            )
+            ) as properties
           from public.mastodon_recent_toots_for_server($1)
         EOQ
       }
@@ -135,6 +148,7 @@ dashboard "Relationships" {
             display_name as title,
             'user' as category,
             jsonb_build_object(
+              'username', username,
               'type', 'primary',
               'display_name', display_name,
               'server', server
@@ -150,7 +164,7 @@ dashboard "Relationships" {
           select
             reblog_username as id,
             reblog_username as title,
-            'user' as category,
+            'reblog_user' as category,
             jsonb_build_object(
               'type', 'reblog',
               'server', reblog_server,
@@ -173,6 +187,7 @@ dashboard "Relationships" {
             server as to_id,
             'belongs to' as title,
             jsonb_build_object(
+              'username', username,
               'display_name', display_name
             ) as properties
           from
@@ -188,6 +203,7 @@ dashboard "Relationships" {
             reblog_server as to_id,
             'belongs to' as title,
             jsonb_build_object(
+              'username', username,
               'display_name', display_name
             ) as properties
           from
@@ -203,6 +219,7 @@ dashboard "Relationships" {
             reblog_username as to_id,
             'boosts' as title,
             jsonb_build_object(
+              'username', username,
               'display_name', display_name
             ) as properties
           from
