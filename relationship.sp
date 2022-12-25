@@ -7,26 +7,13 @@ dashboard "Relationships" {
   with "mastodon_recent_toots" {
     sql = <<EOQ
       create or replace function public.mastodon_recent_toots() returns setof mastodon_toot as $$
-        with data as (
-          select distinct
-            server, 
-            reblog_server,
-            username,
-            display_name,
-            reblog_username,
-            reblog,
-            account_url,
-            in_reply_to_account_id
-          from 
-            mastodon_toot 
-          where 
-            timeline = 'home'
-          )
-          select
-            *
-          from
-            data
-        limit 100
+        select distinct
+          *
+        from 
+          mastodon_toot 
+        where 
+          timeline = 'home'
+         limit 50
       $$ language sql;
     EOQ
   }
@@ -40,7 +27,6 @@ dashboard "Relationships" {
           mastodon_recent_toots()
         where
           server = selected_server
-          or reblog_server = selected_server
       $$ language sql;
     EOQ
   }
@@ -119,9 +105,10 @@ dashboard "Relationships" {
             server as id,
             server as title,
             jsonb_build_object(
-                'server', server
+                'server', server,
+                'reblog_server', reblog_server
               ) as properties,
-            'server' as category
+            case when $1 = server then 'server' else 'reblog_server' end as category
           from public.mastodon_recent_toots_for_server($1)
         EOQ
       }
@@ -134,8 +121,10 @@ dashboard "Relationships" {
             reblog_server as title,
             'reblog_server' as category,
             jsonb_build_object(
-              'server', reblog_server
-            ) as properties
+              'server', server,
+              'reblog_server', reblog_server
+            ) as properties,
+            case when $1 = reblog_server then 'server' else 'reblog_server' end as category
           from public.mastodon_recent_toots_for_server($1)
         EOQ
       }
