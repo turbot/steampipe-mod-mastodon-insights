@@ -55,7 +55,7 @@ dashboard "Relationships" {
       category "server" {
         color = "yellow"
         icon = "server"
-        href  = "https://{{.properties.'server'}}"
+        href  = "http://localhost:9194/mastodon.dashboard.Relationships?input.server={{.properties.'server'}}"
       }
 
       category "reblog_server" {
