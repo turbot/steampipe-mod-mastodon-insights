@@ -46,81 +46,7 @@ dashboard "Relationships" {
 
   }
 
-  container {
 
-    graph {
-
-      title = "boosts from server to server"
-
-      category "server" {
-        color = "yellow"
-        icon = "server"
-        href  = "http://localhost:9194/mastodon.dashboard.Relationships?input.server={{.properties.'server'}}"
-      }
-
-      category "reblog_server" {
-        color = "brown"
-        icon = "server"
-        href  = "https://{{.properties.'server'}}"
-      }
-
-
-      node {
-      // primary servers
-        sql = <<EOQ
-          select distinct
-            server as id,
-            server as title,
-            'server' as category,
-            jsonb_build_object(
-                'server', server,
-                'reblog_server', reblog_server
-              ) as properties
-          from 
-            public.mastodon_recent_toots()
-        EOQ
-      }
-
-      node { // reblog servers
-        args = [ self.input.server.value ]
-        sql = <<EOQ
-          select
-            reblog_server as id,
-            reblog_server as title,
-            'reblog_server' as category,
-            jsonb_build_object(
-              'server', server,
-              'reblog_server', reblog_server
-            ) as properties,
-            case when $1 = reblog_server then 'server' else 'reblog_server' end as category
-          from public.mastodon_recent_toots_for_server($1)
-        EOQ
-      }
-
-
-      edge { //  server reblog server
-        sql = <<EOQ
-          with data as (
-            select distinct
-              server as from_id,
-              reblog_server as to_id,
-              'boosts' as title
-            from
-              public.mastodon_recent_toots()
-            where
-              reblog is not null
-          )
-          select
-            *
-          from 
-            data
-        EOQ
-      }
-
-    }
-
-
-  }  
 
   container {
 
@@ -170,10 +96,17 @@ dashboard "Relationships" {
         href  = "https://{{.properties.'server'}}/@{{.properties.'username'}}"
       }
 
-      category "reblog_user" {
+      category "reblog_user_edge" {
+        color = "green"
+        href = "https://{{.properties.'server'}}/@{{.properties.'reblog_username'}}@{{.properties.'reblog_server'}}/{{.properties.'id'}}"
+      }
+
+      category "reblogged_user_node" {
         color = "green"
         icon = "user"
+        href = "https://{{.properties.'server'}}/@{{.properties.'reblog_username'}}@{{.properties.'reblog_server'}}/{{.properties.'id'}}"
       }
+
 
 
       node {
@@ -232,10 +165,16 @@ dashboard "Relationships" {
           select
             reblog_username as id,
             reblog_username as title,
-            'reblog_user' as category,
+            'reblogged_user_node' as category,
             jsonb_build_object(
               'type', 'reblog',
               'server', reblog_server,
+              'id', id,
+              'username', username,
+              'display_name', display_name,
+              'server', server,
+              'reblog_server', reblog_server,
+              'reblog_username', reblog_username,
               'display_name', reblog -> 'account' ->> display_name,
               'followers', reblog -> 'account' ->> 'followers_count',
               'following', reblog -> 'account' ->> 'following_count'
@@ -286,9 +225,14 @@ dashboard "Relationships" {
             username as from_id,
             reblog_username as to_id,
             'boosts' as title,
+            'reblog_user_edge' as category,
             jsonb_build_object(
+              'id', id,
               'username', username,
-              'display_name', display_name
+              'display_name', display_name,
+              'server', server,
+              'reblog_server', reblog_server,
+              'reblog_username', reblog_username
             ) as properties
           from
             public.mastodon_recent_toots_for_server($1)
@@ -301,6 +245,79 @@ dashboard "Relationships" {
 
   }
 
+  container {
+
+    graph {
+
+      title = "boosts from server to server"
+
+      category "server" {
+        color = "yellow"
+        icon = "server"
+        href  = "http://localhost:9194/mastodon.dashboard.Relationships?input.server={{.properties.'server'}}"
+      }
+
+      category "reblog_server" {
+        color = "brown"
+        icon = "server"
+        href  = "https://{{.properties.'server'}}"
+      }
+
+      node {
+      // primary servers
+        sql = <<EOQ
+          select distinct
+            server as id,
+            server as title,
+            'server' as category,
+            jsonb_build_object(
+                'server', server,
+                'reblog_server', reblog_server
+              ) as properties
+          from 
+            public.mastodon_recent_toots()
+        EOQ
+      }
+
+      node { // reblog servers
+        args = [ self.input.server.value ]
+        sql = <<EOQ
+          select
+            reblog_server as id,
+            reblog_server as title,
+            'reblog_server' as category,
+            jsonb_build_object(
+              'server', server,
+              'reblog_server', reblog_server
+            ) as properties,
+              case when $1 = reblog_server then 'server' else 'reblog_server' end as category
+          from public.mastodon_recent_toots_for_server($1)
+        EOQ
+      }
+
+
+      edge { //  server reblog server
+        sql = <<EOQ
+          with data as (
+            select distinct
+              server as from_id,
+              reblog_server as to_id,
+              'boosts' as title
+            from
+              public.mastodon_recent_toots()
+            where
+              reblog is not null
+          )
+          select
+            *
+          from 
+            data
+        EOQ
+      }
+
+    }
+
+  }    
 
 
 }
