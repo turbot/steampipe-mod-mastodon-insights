@@ -44,6 +44,86 @@ dashboard "Relationships" {
       EOQ
     }
 
+  }
+
+  container {
+
+    graph {
+
+      title = "boosts from server to server"
+
+      category "server" {
+        color = "yellow"
+        icon = "server"
+        href  = "https://{{.properties.'server'}}"
+      }
+
+      category "reblog_server" {
+        color = "brown"
+        icon = "server"
+        href  = "https://{{.properties.'server'}}"
+      }
+
+
+      node {
+      // primary servers
+        sql = <<EOQ
+          select distinct
+            server as id,
+            server as title,
+            'server' as category,
+            jsonb_build_object(
+                'server', server,
+                'reblog_server', reblog_server
+              ) as properties
+          from 
+            public.mastodon_recent_toots()
+        EOQ
+      }
+
+      node { // reblog servers
+        args = [ self.input.server.value ]
+        sql = <<EOQ
+          select
+            reblog_server as id,
+            reblog_server as title,
+            'reblog_server' as category,
+            jsonb_build_object(
+              'server', server,
+              'reblog_server', reblog_server
+            ) as properties,
+            case when $1 = reblog_server then 'server' else 'reblog_server' end as category
+          from public.mastodon_recent_toots_for_server($1)
+        EOQ
+      }
+
+
+      edge { //  server reblog server
+        sql = <<EOQ
+          with data as (
+            select distinct
+              server as from_id,
+              reblog_server as to_id,
+              'boosts' as title
+            from
+              public.mastodon_recent_toots()
+            where
+              reblog is not null
+          )
+          select
+            *
+          from 
+            data
+        EOQ
+      }
+
+    }
+
+
+  }  
+
+  container {
+
     input "server" {
       width = 2
       type = "select"
@@ -67,12 +147,10 @@ dashboard "Relationships" {
       EOQ
     }
 
-  }
-
-  container {
 
     graph {
-      type = "graph"
+
+      title = "boosts from a selected server"
 
       category "server" {
         color = "yellow"
@@ -84,7 +162,7 @@ dashboard "Relationships" {
         color = "brown"
         icon = "server"
         href  = "https://{{.properties.'server'}}"
-        }
+      }
 
       category "user" {
         color = "orange"
@@ -96,6 +174,7 @@ dashboard "Relationships" {
         color = "green"
         icon = "user"
       }
+
 
       node {
       // primary server
@@ -221,6 +300,8 @@ dashboard "Relationships" {
     }
 
   }
+
+
 
 }
 
