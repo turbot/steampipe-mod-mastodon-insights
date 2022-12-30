@@ -177,7 +177,8 @@ dashboard "Relationships" {
               'reblog_username', reblog_username,
               'display_name', reblog -> 'account' ->> display_name,
               'followers', reblog -> 'account' ->> 'followers_count',
-              'following', reblog -> 'account' ->> 'following_count'
+              'following', reblog -> 'account' ->> 'following_count',
+              'content', reblog ->> 'content'
             ) as properties
           from 
             public.mastodon_recent_toots_for_server($1)
