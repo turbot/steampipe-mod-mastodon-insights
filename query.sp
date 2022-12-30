@@ -409,7 +409,7 @@ query "list" {
     select distinct on (list, person, hour) -- only one per list/user/hour
       person,
       hour,
-      toot,
+      substring(toot from 1 for 200) as toot,
       url
     from
       data
