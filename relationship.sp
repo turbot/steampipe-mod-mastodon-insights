@@ -64,7 +64,7 @@ dashboard "Relationships" {
             server
         )
         select 
-          server || '(' || count || ')' as label,
+          server || ' (' || count || ')' as label,
           server as value
         from
           data
