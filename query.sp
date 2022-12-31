@@ -217,7 +217,7 @@ query "search_people" {
     with data as (
       select
         id,
-        url,
+        instance_qualified_account_url as url,
         case when display_name = '' then username else display_name end as person,
         to_char(created_at, 'YYYY-MM-DD') as created_at,
         followers_count,
@@ -267,7 +267,7 @@ query "followers" {
     combined as (
       select
         d.list,
-        f.instance_qualified_url as url,
+        f.instance_qualified_account_url as url,
         case when f.display_name = '' then f.username else f.display_name end as person,
         to_char(f.created_at, 'YYYY-MM-DD') as since,
         f.followers_count as followers,
@@ -318,7 +318,7 @@ query "following" {
     combined as (
       select
         d.list,
-        f.instance_qualified_url as url,
+        f.instance_qualified_account_url as url,
         case when f.display_name = '' then f.username else f.display_name end as person,
         to_char(f.created_at, 'YYYY-MM-DD') as since,
         f.followers_count as followers,
