@@ -2,7 +2,7 @@ query "timeline" {
   sql = <<EOQ
     with toots as (
       select
-        account_url as account,
+        instance_qualified_account_url as account,
         case when display_name = '' then username else display_name end as person,
         case
           when reblog -> 'url' is null then
@@ -117,7 +117,7 @@ query "favorite" {
   sql = <<EOQ
     with toots as (
       select
-        account_url as account,
+        instance_qualified_account_url as account_url,
         case when display_name = '' then username else display_name end as person,
         case
           when reblog -> 'url' is null then
@@ -143,7 +143,7 @@ query "favorite" {
       limit $1
     )
     select
-      account,
+      account_url,
       person || 
         case 
           when in_reply_to is null then ''
@@ -217,7 +217,7 @@ query "search_people" {
     with data as (
       select
         id,
-        instance_qualified_account_url as url,
+        instance_qualified_account_url as account_url,
         case when display_name = '' then username else display_name end as person,
         to_char(created_at, 'YYYY-MM-DD') as created_at,
         followers_count,
@@ -232,7 +232,7 @@ query "search_people" {
         person
     )
     select
-      d.url,
+      d.account_url,
       d.person,
       case when r.following then '✔️' else '' end as i_follow,
       case when r.followed_by then '✔️' else '' end as follows_me,
@@ -267,7 +267,7 @@ query "followers" {
     combined as (
       select
         d.list,
-        f.instance_qualified_account_url as url,
+        f.instance_qualified_account_url as account_url,
         case when f.display_name = '' then f.username else f.display_name end as person,
         to_char(f.created_at, 'YYYY-MM-DD') as since,
         f.followers_count as followers,
@@ -318,7 +318,7 @@ query "following" {
     combined as (
       select
         d.list,
-        f.instance_qualified_account_url as url,
+        f.instance_qualified_account_url as account_url,
         case when f.display_name = '' then f.username else f.display_name end as person,
         to_char(f.created_at, 'YYYY-MM-DD') as since,
         f.followers_count as followers,
