@@ -267,7 +267,7 @@ query "followers" {
     combined as (
       select
         d.list,
-        f.url,
+        f.instance_qualified_url as url,
         case when f.display_name = '' then f.username else f.display_name end as person,
         to_char(f.created_at, 'YYYY-MM-DD') as since,
         f.followers_count as followers,
@@ -318,7 +318,7 @@ query "following" {
     combined as (
       select
         d.list,
-        f.url,
+        f.instance_qualified_url as url,
         case when f.display_name = '' then f.username else f.display_name end as person,
         to_char(f.created_at, 'YYYY-MM-DD') as since,
         f.followers_count as followers,
@@ -392,7 +392,7 @@ query "list" {
         l.list,
         case when t.display_name = '' then t.username else t.display_name end as person,
         t.url,
-        to_char(t.created_at, 'MM-DD HH24') as hour,
+        to_char(t.created_at, 'MM-DD') as day,
         t.content as toot
       from
         mastodon_toot t
@@ -406,15 +406,15 @@ query "list" {
         and t.reblog -> 'url' is null -- only original posts
         and t.in_reply_to_account_id is null -- only original posts
     )
-    select distinct on (list, person, hour) -- only one per list/user/hour
+    select distinct on (list, person, day) -- only one per list/user/day
       person,
-      hour,
+      day,
       substring(toot from 1 for 200) as toot,
       url
     from
       data
     order by
-      hour desc, list, person
+      day desc, list, person
   EOQ
   param "title" {}
 }
