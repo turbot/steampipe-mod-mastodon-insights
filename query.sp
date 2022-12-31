@@ -2,7 +2,7 @@ query "timeline" {
   sql = <<EOQ
     with toots as (
       select
-        instance_qualified_account_url as account,
+        account_url as account,
         case when display_name = '' then username else display_name end as person,
         case
           when reblog -> 'url' is null then
