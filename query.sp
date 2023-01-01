@@ -20,8 +20,8 @@ query "timeline" {
           else ''
         end as in_reply_to,
         case
-          when reblog -> 'url' is not null then reblog ->> 'url'
-          else url
+          when reblog -> 'url' is not null then instance_qualified_reblog_url
+          else instance_qualified_url
         end as url
       from
         mastodon_toot
