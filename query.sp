@@ -391,7 +391,7 @@ query "list" {
       select
         l.list,
         case when t.display_name = '' then t.username else t.display_name end as person,
-        t.url,
+        t.instance_qualified_url as url,
         to_char(t.created_at, 'MM-DD') as day,
         t.content as toot
       from
