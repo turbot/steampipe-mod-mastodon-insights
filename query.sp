@@ -385,15 +385,15 @@ query "list" {
         id,
         title as list
       from
-        mastodon_list
+       mastodon_list
     ),
     data as (
       select
         l.list,
+        to_char(t.created_at, 'YYYY-MM-DD') as day,
         case when t.display_name = '' then t.username else t.display_name end as person,
         t.instance_qualified_url as url,
-        to_char(t.created_at, 'MM-DD') as day,
-        t.content as toot
+        substring(t.content from 1 for 200) as toot
       from
         mastodon_toot t
       join
@@ -406,15 +406,15 @@ query "list" {
         and t.reblog -> 'url' is null -- only original posts
         and t.in_reply_to_account_id is null -- only original posts
     )
-    select distinct on (list, person, day) -- only one per list/user/day
-      person,
+    select distinct on (person, day) -- only one per person per day
       day,
-      substring(toot from 1 for 200) as toot,
+      person,
+      toot,
       url
     from
       data
     order by
-      day desc, list, person
+      day desc, person
   EOQ
   param "title" {}
 }
