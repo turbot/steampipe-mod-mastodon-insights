@@ -440,7 +440,7 @@ query "my_toots" {
     with data as (
       select
         account_url as account,
-        to_char(created_at, 'MM-DD HH24:MI') as created_at,
+        to_char(created_at, 'YYYY-MM-DD HH24:MI') as created_at,
         case
           when reblog -> 'url' is not null then '🢁'
           else ''
@@ -468,7 +468,7 @@ query "my_toots" {
       limit $1
     )
     select
-      account,
+      created_at,
       boosted || ' ' || toot as toot,
       url
     from
