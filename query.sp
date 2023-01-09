@@ -20,8 +20,8 @@ query "timeline" {
           else ''
         end as in_reply_to,
         case
-          when reblog -> 'url' is not null then reblog ->> 'url'
-          else url
+          when reblog -> 'url' is not null then instance_qualified_reblog_url
+          else instance_qualified_url
         end as url
       from
         mastodon_toot
@@ -117,7 +117,7 @@ query "favorite" {
   sql = <<EOQ
     with toots as (
       select
-        account_url as account,
+        instance_qualified_account_url as account_url,
         case when display_name = '' then username else display_name end as person,
         case
           when reblog -> 'url' is null then
@@ -143,7 +143,7 @@ query "favorite" {
       limit $1
     )
     select
-      account,
+      account_url,
       person || 
         case 
           when in_reply_to is null then ''
@@ -217,7 +217,7 @@ query "search_people" {
     with data as (
       select
         id,
-        url,
+        instance_qualified_account_url as account_url,
         case when display_name = '' then username else display_name end as person,
         to_char(created_at, 'YYYY-MM-DD') as created_at,
         followers_count,
@@ -232,7 +232,7 @@ query "search_people" {
         person
     )
     select
-      d.url,
+      d.account_url,
       d.person,
       case when r.following then '✔️' else '' end as i_follow,
       case when r.followed_by then '✔️' else '' end as follows_me,
@@ -267,7 +267,7 @@ query "followers" {
     combined as (
       select
         d.list,
-        f.url,
+        f.instance_qualified_account_url as account_url,
         case when f.display_name = '' then f.username else f.display_name end as person,
         to_char(f.created_at, 'YYYY-MM-DD') as since,
         f.followers_count as followers,
@@ -318,7 +318,7 @@ query "following" {
     combined as (
       select
         d.list,
-        f.url,
+        f.instance_qualified_account_url as account_url,
         case when f.display_name = '' then f.username else f.display_name end as person,
         to_char(f.created_at, 'YYYY-MM-DD') as since,
         f.followers_count as followers,
@@ -385,15 +385,15 @@ query "list" {
         id,
         title as list
       from
-        mastodon_list
+       mastodon_list
     ),
     data as (
       select
         l.list,
+        to_char(t.created_at, 'YYYY-MM-DD') as day,
         case when t.display_name = '' then t.username else t.display_name end as person,
-        t.url,
-        to_char(t.created_at, 'MM-DD HH24') as hour,
-        t.content as toot
+        t.instance_qualified_url as url,
+        substring(t.content from 1 for 200) as toot
       from
         mastodon_toot t
       join
@@ -406,15 +406,15 @@ query "list" {
         and t.reblog -> 'url' is null -- only original posts
         and t.in_reply_to_account_id is null -- only original posts
     )
-    select distinct on (list, person, hour) -- only one per list/user/hour
+    select distinct on (person, day) -- only one per person per day
+      day,
       person,
-      hour,
-      substring(toot from 1 for 200) as toot,
+      toot,
       url
     from
       data
     order by
-      hour desc, list, person
+      day desc, person
   EOQ
   param "title" {}
 }
@@ -440,7 +440,7 @@ query "my_toots" {
     with data as (
       select
         account_url as account,
-        to_char(created_at, 'MM-DD HH24:MI') as created_at,
+        to_char(created_at, 'YYYY-MM-DD HH24:MI') as created_at,
         case
           when reblog -> 'url' is not null then '🢁'
           else ''
@@ -468,7 +468,7 @@ query "my_toots" {
       limit $1
     )
     select
-      account,
+      created_at,
       boosted || ' ' || toot as toot,
       url
     from
