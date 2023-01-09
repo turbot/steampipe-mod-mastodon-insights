@@ -4,47 +4,6 @@ dashboard "Relationships" {
     service = "Mastodon"
   }
 
-  // for graph 1
-
-  with "mastodon_recent_toots_primary_server" {
-    query = query.mastodon_recent_toots_primary_server
-  }
-
-  with "mastodon_recent_toots_reblog_server" {
-    query = query.mastodon_recent_toots_reblog_server
-  }
-
-  with "mastodon_recent_toots_primary_person" {
-    query = query.mastodon_recent_toots_primary_person
-  }
-
-  with "mastodon_recent_toots_person_reblog_person" {
-    query = query.mastodon_recent_toots_person_reblog_person
-  }
-
-  with "mastodon_recent_toots_primary_person_to_server" {
-    query = query.mastodon_recent_toots_primary_person_to_server
-  }
-
-  with "mastodon_recent_toots_reblog_person_to_server" {
-    query = query.mastodon_recent_toots_reblog_person_to_server
-  }
-
-  with "mastodon_recent_toots_reblog_person_to_server" {
-    query = query.mastodon_recent_toots_person_boost_person
-  }
-
-// for graph 2
-
-  with "mastodon_recent_toots_primary_server_all" {
-    query = query.mastodon_recent_toots_primary_server_all
-  }
-
-  with "mastodon_recent_toots_server_reblog_server" {
-    query = query.mastodon_recent_toots_server_reblog_server
-  }
-
-
   container {
 
     input "server" {
@@ -90,7 +49,7 @@ dashboard "Relationships" {
       category "user" {
         color = "orange"
         icon = "user"
-        href  = "https://{{.properties.'server'}}/@{{.properties.'username'}}"
+        href  = "{{.properties.'instance_qualified_account_url'}}"
       }
 
       category "reblog_user_edge" {
@@ -101,7 +60,7 @@ dashboard "Relationships" {
       category "reblogged_user_node" {
         color = "green"
         icon = "user"
-        href = "https://{{.properties.'server'}}/@{{.properties.'reblog_username'}}@{{.properties.'reblog_server'}}/{{.properties.'id'}}"
+        href  = "{{.properties.'instance_qualified_reblog_url'}}"
       }
 
       node {
@@ -170,7 +129,6 @@ dashboard "Relationships" {
       }
 
       edge {
-        args = [ input.server ]
         query = query.mastodon_recent_toots_server_reblog_server
       }
 
@@ -226,6 +184,7 @@ query "mastodon_recent_toots_primary_person" {
       'user' as category,
       jsonb_build_object(
         'username', username,
+        'instance_qualified_account_url', instance_qualified_account_url,
         'type', 'primary',
         'display_name', display_name,
         'server', server
@@ -253,6 +212,7 @@ query "mastodon_recent_toots_person_reblog_person" {
         'server', server,
         'reblog_server', reblog_server,
         'reblog_username', reblog_username,
+        'instance_qualified_reblog_url', instance_qualified_reblog_url,
         'display_name', reblog -> 'account' ->> display_name,
         'followers', reblog -> 'account' ->> 'followers_count',
         'following', reblog -> 'account' ->> 'following_count',
@@ -323,6 +283,7 @@ query "mastodon_recent_toots_person_boost_person" {
       timeline = 'home'
       and server = $1
       and reblog is not null
+    limit ${local.limit}
   EOQ
 }
 
@@ -342,7 +303,8 @@ query "mastodon_recent_toots_primary_server_all" {
       mastodon_toot
     where
       timeline = 'home'
-  EOQ
+    limit ${local.limit}
+EOQ
 }
 
 query "mastodon_recent_toots_server_reblog_server" {
@@ -355,7 +317,6 @@ query "mastodon_recent_toots_server_reblog_server" {
       mastodon_toot
     where
       timeline = 'home'
-      and server = $1
-  EOQ
+EOQ
 }
 
