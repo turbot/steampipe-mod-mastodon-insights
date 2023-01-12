@@ -29,6 +29,8 @@ Home
 🞄
 [Rate](${local.host}/mastodon.dashboard.Rate)
 🞄
+[Relationships](${local.host}/mastodon.dashboard.Relationships)
+🞄
 [Remote](${local.host}/mastodon.dashboard.Remote)
 🞄
 [Server](${local.host}/mastodon.dashboard.Server)
@@ -44,32 +46,11 @@ Home
 
     table {
       width = 4
-      sql = <<EOQ
-      select 
-        _ctx ->> 'connection_name' as connection,
-        name as server
-      from
-        mastodon_server
-      EOQ
+      query = query.connection
     }
 
     input "limit" {
-      width = 2
-      title = "limit"
-      sql = <<EOQ
-        with limits(label) as (
-          values 
-            ( '50' ),
-            ( '100' ),
-            ( '200' ),
-            ( '500' )
-        )
-        select
-          label,
-          label::int as value
-        from 
-          limits
-      EOQ
+      base = input.limit
     }
     
     input "boosts" {
@@ -97,7 +78,7 @@ Home
     table {
       title = "home: recent toots"
       query = query.timeline
-      args = [ "home", self.input.limit, self.input.boosts ]
+      args = [ "home", self.input.limit.value, self.input.boosts.value ]
       column "person" {
         wrap = "all"
       }

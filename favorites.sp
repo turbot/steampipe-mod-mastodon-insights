@@ -29,6 +29,8 @@ Favorites
 🞄
 [Rate](${local.host}/mastodon.dashboard.Rate)
 🞄
+[Relationships](${local.host}/mastodon.dashboard.Relationships)
+🞄
 [Remote](${local.host}/mastodon.dashboard.Remote)
 🞄
 [Server](${local.host}/mastodon.dashboard.Server)
@@ -44,34 +46,12 @@ Favorites
 
     table {
       width = 4
-      sql = <<EOQ
-      select 
-        _ctx ->> 'connection_name' as connection,
-        name as server
-      from
-        mastodon_server
-      EOQ
+      query = query.connection
     }
 
     input "limit" {
-      width = 2
-      title = "limit"
-      sql = <<EOQ
-        with limits(label) as (
-          values 
-            ( '20' ),
-            ( '50' ),
-            ( '100' ),
-            ( '200' ),
-            ( '500' )
-        )
-        select
-          label,
-          label::int as value
-        from 
-          limits
-      EOQ
-    }    
+      base = input.limit
+    } 
 
   }
 
@@ -79,7 +59,7 @@ Favorites
   container { 
 
     table {
-      args = [ self.input.limit ]
+      args = [ self.input.limit.value ]
       title = "favorites"
       query = query.favorite
       column "person" {

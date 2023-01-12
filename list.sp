@@ -29,6 +29,8 @@ List
 🞄
 [Rate](${local.host}/mastodon.dashboard.Rate)
 🞄
+[Relationships](${local.host}/mastodon.dashboard.Relationships)
+🞄
 [Remote](${local.host}/mastodon.dashboard.Remote)
 🞄
 [Server](${local.host}/mastodon.dashboard.Server)
@@ -44,13 +46,7 @@ List
 
     table {
       width = 4
-      sql = <<EOQ
-      select 
-        _ctx ->> 'connection_name' as connection,
-        name as server
-      from
-        mastodon_server
-      EOQ
+      query = query.connection
     }
 
     input "list" {
@@ -95,7 +91,7 @@ List
     table {
       width = 8
       query = query.list
-      args = [ self.input.list ]
+      args = [ self.input.list.value ]
       column "toot" {
         wrap = "all"
       }

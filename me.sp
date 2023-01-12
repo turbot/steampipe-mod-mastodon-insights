@@ -44,43 +44,19 @@ Me
 
     table {
       width = 4
-      sql = <<EOQ
-      select 
-        _ctx ->> 'connection_name' as connection,
-        name as server
-      from
-        mastodon_server
-      EOQ
+      query = query.connection
     }
 
     input "limit" {
-      width = 2
-      title = "limit"
-      sql = <<EOQ
-        with limits(label, value) as (
-          values 
-            ( '50', 50),
-            ( '100', 100),
-            ( '200', 200),
-            ( '500', 500)
-        )
-        select
-          label,
-          value
-        from 
-          limits
-        order by 
-          value
-      EOQ
-    }    
-
+      base = input.limit
+    } 
 
   }
 
     chart {
       width = 6
       title = "my toots by day"
-      args = [ self.input.limit ]
+      args = [ self.input.limit.value ]
       sql = <<EOQ
         with data as (
           select
@@ -109,7 +85,7 @@ Me
       width = 6
       type = "donut"
       title = "my toots by type"
-      args = [ self.input.limit ]
+      args = [ self.input.limit.value ]
       sql = <<EOQ
         with data as (
           select
@@ -139,7 +115,7 @@ Me
   container { 
 
     table {
-      args = [ self.input.limit ]
+      args = [ self.input.limit.value ]
       query = query.my_toots
       column "toot" {
         wrap = "all"

@@ -29,6 +29,8 @@ dashboard "Remote" {
 🞄
 [Rate](${local.host}/mastodon.dashboard.Rate)
 🞄
+[Relationships](${local.host}/mastodon.dashboard.Relationships)
+🞄
 Remote
 🞄
 [Server](${local.host}/mastodon.dashboard.Server)
@@ -79,7 +81,7 @@ Remote
     table {
       title = "remote: recent toots"
       query = query.timeline
-      args = [ "remote", self.input.limit, "n/a" ]
+      args = [ "remote", self.input.limit.value, "n/a" ]
       column "person" {
         wrap = "all"
       }
