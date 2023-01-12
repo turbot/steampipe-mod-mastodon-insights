@@ -29,6 +29,8 @@ dashboard "Server" {
 🞄
 [Rate](${local.host}/mastodon.dashboard.Rate)
 🞄
+[Relationships](${local.host}/mastodon.dashboard.Relationships)
+🞄
 [Remote](${local.host}/mastodon.dashboard.Remote)
 🞄
 Server

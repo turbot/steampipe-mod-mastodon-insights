@@ -29,6 +29,8 @@ dashboard "Remote" {
 🞄
 [Rate](${local.host}/mastodon.dashboard.Rate)
 🞄
+[Relationships](${local.host}/mastodon.dashboard.Relationships)
+🞄
 Remote
 🞄
 [Server](${local.host}/mastodon.dashboard.Server)
@@ -44,12 +46,33 @@ Remote
 
     table {
       width = 4
-      query = query.connection
+      sql = <<EOQ
+      select 
+        _ctx ->> 'connection_name' as connection,
+        name as server
+      from
+        mastodon_server
+      EOQ
     }
 
     input "limit" {
-      base = input.limit
-    }
+      width = 2
+      title = "limit"
+      sql = <<EOQ
+        with limits(label) as (
+          values 
+            ( '50' ),
+            ( '100' ),
+            ( '200' ),
+            ( '500' )
+        )
+        select
+          label,
+          label::int as value
+        from 
+          limits
+      EOQ
+    }    
 
   }
 
