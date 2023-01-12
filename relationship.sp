@@ -7,26 +7,7 @@ dashboard "Relationships" {
   container {
 
     input "server" {
-      width = 2
-      type = "select"
-      sql = <<EOQ
-        with data as (
-          select 
-            server,
-            count(*)
-          from
-            mastodon_recent_toots()
-          group by
-            server
-        )
-        select 
-          server || ' (' || count || ')' as label,
-          server as value
-        from
-          data
-        order by 
-          server
-      EOQ
+      base = input.server
     }
 
 

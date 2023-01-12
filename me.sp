@@ -44,36 +44,12 @@ Me
 
     table {
       width = 4
-      sql = <<EOQ
-      select 
-        _ctx ->> 'connection_name' as connection,
-        name as server
-      from
-        mastodon_server
-      EOQ
+      query = query.connection
     }
 
     input "limit" {
-      width = 2
-      title = "limit"
-      sql = <<EOQ
-        with limits(label, value) as (
-          values 
-            ( '50', 50),
-            ( '100', 100),
-            ( '200', 200),
-            ( '500', 500)
-        )
-        select
-          label,
-          value
-        from 
-          limits
-        order by 
-          value
-      EOQ
-    }    
-
+      base = input.limit
+    } 
 
   }
 

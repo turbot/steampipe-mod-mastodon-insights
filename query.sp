@@ -477,3 +477,12 @@ query "my_toots" {
   param "limit" {}
 }
 
+query "connection" {
+  sql = <<EOQ
+  select 
+    _ctx ->> 'connection_name' as connection,
+    name as server
+  from
+    mastodon_server
+  EOQ
+}

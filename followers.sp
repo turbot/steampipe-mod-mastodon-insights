@@ -44,13 +44,7 @@ Followers
 
     table {
       width = 4
-      sql = <<EOQ
-      select 
-        _ctx ->> 'connection_name' as connection,
-        name as server
-      from
-        mastodon_server
-      EOQ
+      query = query.connection
     }
 
     card {
