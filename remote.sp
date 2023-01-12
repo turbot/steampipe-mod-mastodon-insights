@@ -79,7 +79,7 @@ Remote
     table {
       title = "remote: recent toots"
       query = query.timeline
-      args = [ "remote", self.input.limit, "n/a" ]
+      args = [ "remote", self.input.limit.value, "n/a" ]
       column "person" {
         wrap = "all"
       }

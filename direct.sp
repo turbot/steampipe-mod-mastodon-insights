@@ -79,7 +79,7 @@ Direct
     table {
       title = "direct: recent toots"
       query = query.timeline
-      args = [ "direct", self.input.limit, "n/a" ]
+      args = [ "direct", self.input.limit.value, "n/a" ]
       column "person" {
         wrap = "all"
       }

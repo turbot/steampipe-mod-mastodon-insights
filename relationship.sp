@@ -64,37 +64,37 @@ dashboard "Relationships" {
       }
 
       node {
-        args = [ input.server ]
+        args = [ self.input.server.value ]
         query = query.mastodon_recent_toots_primary_server
       }
 
       node {
-        args = [ input.server ]
+        args = [ self.input.server.value ]
         query = query.mastodon_recent_toots_reblog_server
       }
 
       node {
-        args = [ input.server ]
+        args = [ self.input.server.value ]
         query = query.mastodon_recent_toots_primary_person
       }
 
       node {
-        args = [ input.server ]
+        args = [ self.input.server.value ]
         query = query.mastodon_recent_toots_person_reblog_person
       }
 
       edge {
-        args = [ input.server ]
+        args = [ self.input.server.value ]
         query = query.mastodon_recent_toots_primary_person_to_server
       }
 
       edge {
-        args = [ input.server ]
+        args = [ self.input.server.value ]
         query = query.mastodon_recent_toots_reblog_person_to_server
       }
 
       edge {
-        args = [ input.server ]
+        args = [ self.input.server.value ]
         query = query.mastodon_recent_toots_person_boost_person
       }
 
@@ -124,7 +124,7 @@ dashboard "Relationships" {
       }
 
       node {
-        args = [ input.server ]
+        args = [ self.input.server.value ]
         query = query.mastodon_recent_toots_reblog_server
       }
 

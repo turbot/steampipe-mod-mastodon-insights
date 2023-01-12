@@ -79,7 +79,7 @@ Favorites
   container { 
 
     table {
-      args = [ self.input.limit ]
+      args = [ self.input.limit.value ]
       title = "favorites"
       query = query.favorite
       column "person" {

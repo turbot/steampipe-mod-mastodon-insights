@@ -95,7 +95,7 @@ List
     table {
       width = 8
       query = query.list
-      args = [ self.input.list ]
+      args = [ self.input.list.value ]
       column "toot" {
         wrap = "all"
       }

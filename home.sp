@@ -97,7 +97,7 @@ Home
     table {
       title = "home: recent toots"
       query = query.timeline
-      args = [ "home", self.input.limit, self.input.boosts ]
+      args = [ "home", self.input.limit.value, self.input.boosts.value ]
       column "person" {
         wrap = "all"
       }

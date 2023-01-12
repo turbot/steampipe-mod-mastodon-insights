@@ -79,7 +79,7 @@ Local
     table {
       title = "local: recent toots"
       query = query.timeline
-      args = [ "local", self.input.limit, "n/a" ]
+      args = [ "local", self.input.limit.value, "n/a" ]
       column "person" {
         wrap = "all"
       }

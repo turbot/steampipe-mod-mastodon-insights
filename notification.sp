@@ -81,7 +81,7 @@ Notification
   container { 
 
     table {
-      args = [ self.input.limit ]
+      args = [ self.input.limit.value ]
       title = "notifications"
       query = query.notification
       column "status_url" {

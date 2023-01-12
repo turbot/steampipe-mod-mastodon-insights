@@ -80,7 +80,7 @@ Me
     chart {
       width = 6
       title = "my toots by day"
-      args = [ self.input.limit ]
+      args = [ self.input.limit.value ]
       sql = <<EOQ
         with data as (
           select
@@ -109,7 +109,7 @@ Me
       width = 6
       type = "donut"
       title = "my toots by type"
-      args = [ self.input.limit ]
+      args = [ self.input.limit.value ]
       sql = <<EOQ
         with data as (
           select
@@ -139,7 +139,7 @@ Me
   container { 
 
     table {
-      args = [ self.input.limit ]
+      args = [ self.input.limit.value ]
       query = query.my_toots
       column "toot" {
         wrap = "all"
