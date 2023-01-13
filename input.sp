@@ -28,9 +28,12 @@ input "server" {
       server,
       count(*)
     from
-      mastodon_recent_toots()
+      mastodon_toot
+    where
+      timeline = 'home'
     group by
       server
+    limit ${local.limit}
     )
     select 
       server || ' (' || count || ')' as label,
