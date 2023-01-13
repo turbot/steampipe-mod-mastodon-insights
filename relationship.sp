@@ -143,8 +143,7 @@ Relationships
       }
 
       node {
-        args = [ self.input.server.value ]
-        query = query.mastodon_recent_toots_reblog_server
+        query = query.mastodon_recent_toots_reblog_server_all
       }
 
       edge {
@@ -181,12 +180,11 @@ query "mastodon_recent_toots_reblog_server" {
     select distinct
       reblog_server as id,
       reblog_server as title,
-      'reblog_server' as category,
+      case when $1 = reblog_server then 'server' else 'reblog_server' end as category,
       jsonb_build_object(
         'server', server,
         'reblog_server', reblog_server
-      ) as properties,
-      case when $1 = reblog_server then 'server' else 'reblog_server' end as category
+      ) as properties
     from 
       mastodon_toot
     where
@@ -325,6 +323,25 @@ query "mastodon_recent_toots_primary_server_all" {
     limit ${local.limit}
 EOQ
 }
+
+query "mastodon_recent_toots_reblog_server_all" {
+  sql = <<EOQ
+    select distinct
+      reblog_server as id,
+      reblog_server as title,
+      'reblog_server' as category,
+      jsonb_build_object(
+          'server', server,
+          'reblog_server', reblog_server
+      ) as properties
+    from 
+      mastodon_toot
+    where
+      timeline = 'home'
+    limit ${local.limit}
+EOQ
+}
+
 
 query "mastodon_recent_toots_server_reblog_server" {
   sql = <<EOQ
