@@ -1,5 +1,5 @@
 dashboard "Local" {
-  
+
   tags = {
     service = "Mastodon"
   }
@@ -51,11 +51,11 @@ Local
 
     input "limit" {
       base = input.limit
-    }  
+    }
 
   }
 
-  container { 
+  container {
 
     table {
       title = "local: recent toots"

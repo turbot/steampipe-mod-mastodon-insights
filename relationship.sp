@@ -40,56 +40,151 @@ Relationships
 [TagSearch](${local.host}/mastodon.dashboard.TagSearch)
       EOT
     }
-  }  
+  }
+
+  input "server" {
+    base = input.server
+  }
 
   container {
-
-    input "server" {
-      base = input.server
-    }
-
 
     graph {
 
       title = "boosts from selected server"
 
       node {
-        category = category.server
+        category = category.boosted_server
         args = [ self.input.server.value ]
-        query = query.mastodon_recent_toots_primary_server
+        sql = <<EOQ
+          select
+            reblog_server as id,
+            reblog_server as title,
+            jsonb_build_object(
+              'username', username,
+              'server', server,
+              'reblog_username', reblog_username,
+              'reblog_server', reblog_server
+            ) as properties
+          from
+             mastodon_boosts()
+          where
+             server = $1
+        EOQ
+      }
+
+      // Note: the sequence of nodes matters. If mastodon.social is both a server and
+      // reblog_server, we want this node here to have the selected_server category
+      node {
+        category = category.selected_server
+        args = [ self.input.server.value ]
+        sql = <<EOQ
+          select
+            server as id,
+            server as title,
+            jsonb_build_object(
+              'username', username,
+              'server', server,
+              'reblog_username', reblog_username,
+              'reblog_server', reblog_server
+            ) as properties
+          from
+             mastodon_boosts()
+          where
+             server = $1
+        EOQ
       }
 
       node {
-        category = category.reblog_server        
+        category = category.person
         args = [ self.input.server.value ]
-        query = query.mastodon_recent_toots_reblog_server
+        sql = <<EOQ
+          select
+            username as id,
+            display_name as title,
+            jsonb_build_object(
+              'server', server,
+              'reblog_server', reblog_server,
+              'instance_qualified_account_url', instance_qualified_account_url
+            ) as properties
+          from
+             mastodon_boosts()
+          where
+            server = $1
+        EOQ
       }
 
       node {
-        category = category.user
+        category = category.boosted_person
         args = [ self.input.server.value ]
-        query = query.mastodon_recent_toots_primary_person
+        sql = <<EOQ
+          select
+            reblog_username as id,
+            reblog_username as title,
+            jsonb_build_object(
+              'server', server,
+              'reblog_server', reblog_server,
+              'instance_qualified_reblog_url', instance_qualified_reblog_url
+            ) as properties
+          from
+             mastodon_boosts()
+          where
+            server = $1
+        EOQ
       }
 
-      node {
-        category = category.reblog_user
+      edge {
+        sql = <<EOQ
+          select
+            username as from_id,
+            server as to_id,
+            'belongs to' as title,
+            jsonb_build_object(
+              'username', username,
+              'server', server,
+              'reblog_username', reblog_username,
+              'reblog_server', reblog_server
+          ) as properties
+          from
+             mastodon_boosts()
+        EOQ
+      }
+
+      edge {
+        category = category.boost
         args = [ self.input.server.value ]
-        query = query.mastodon_recent_toots_person_reblog_person
+        sql = <<EOQ
+          select
+            username as from_id,
+            reblog_username as to_id,
+            'boosts' as title,
+            jsonb_build_object(
+              'username', username,
+              'server', server,
+              'content', content,
+              'reblog_username', reblog_username,
+              'reblog_server', reblog_server,
+              'instance_qualified_url', instance_qualified_url,
+              'content', reblog ->> 'content'
+            ) as properties
+          from
+             mastodon_boosts()
+          where
+             server = $1
+        EOQ
       }
 
       edge {
         args = [ self.input.server.value ]
-        query = query.mastodon_recent_toots_primary_person_to_server
-      }
-
-      edge {
-        args = [ self.input.server.value ]
-        query = query.mastodon_recent_toots_reblog_person_to_server
-      }
-
-      edge {
-        args = [ self.input.server.value ]
-        query = query.mastodon_recent_toots_person_boost_person
+        sql = <<EOQ
+          select
+            reblog_username as from_id,
+            reblog_server as to_id,
+            'belongs to' as title
+          from
+             mastodon_boosts()
+          where
+             server = $1
+        EOQ
       }
 
     }
@@ -103,221 +198,65 @@ Relationships
 
       node {
         category = category.server
-        query = query.mastodon_recent_toots_primary_server_all
+        sql = <<EOQ
+          select
+            server as id,
+            server as title,
+            jsonb_build_object(
+              'server', server,
+              'reblog_server', reblog_server
+            ) as properties
+          from
+            mastodon_boosts()
+        EOQ
       }
 
       node {
-        category = category.reblog_server
-        query = query.mastodon_recent_toots_reblog_server_all
+        category = category.server
+        sql = <<EOQ
+          select
+            reblog_server as id,
+            reblog_server as title,
+            jsonb_build_object(
+              'server', server,
+              'reblog_server', reblog_server
+            ) as properties
+          from
+            mastodon_boosts()
+        EOQ
       }
 
       edge {
-        query = query.mastodon_recent_toots_server_reblog_server
+        category = category.boost
+        sql = <<EOQ
+          select
+            server as from_id,
+            reblog_server as to_id,
+            'boosts' as title
+          from
+            mastodon_boosts()
+        EOQ
       }
 
     }
-  } 
 
-}
+  }
 
-// for graph 1
+  with "mastodon_boosts" {
+    sql = <<EOQ
+      create or replace function public.mastodon_boosts()
+      returns setof mastodon_toot as $$
+        select
+          *
+        from
+          mastodon_toot
+        where
+          timeline = 'home'
+          and reblog_server is not null
+          limit ${local.limit}
+      $$ language sql;
+    EOQ
+  }
 
-query "mastodon_recent_toots_primary_server" {
-  sql = <<EOQ
-    select distinct
-      server as id,
-      server as title,
-      'server' as category,
-      jsonb_build_object(
-          'server', server,
-          'reblog_server', reblog_server
-      ) as properties
-    from 
-      mastodon_toot
-    where
-      timeline = 'home'
-      and server = $1
-  EOQ
-}
-
-query "mastodon_recent_toots_reblog_server" {
-  sql = <<EOQ
-    select distinct
-      reblog_server as id,
-      reblog_server as title,
-      case when $1 = reblog_server then 'server' else 'reblog_server' end as category,
-      jsonb_build_object(
-        'server', server,
-        'reblog_server', reblog_server
-      ) as properties
-    from 
-      mastodon_toot
-    where
-      timeline = 'home'
-      and server = $1
-  EOQ
-}
-
-query "mastodon_recent_toots_primary_person" {
-  sql = <<EOQ
-    select
-      username as id,
-      display_name as title,
-      'user' as category,
-      jsonb_build_object(
-        'username', username,
-        'instance_qualified_account_url', instance_qualified_account_url,
-        'type', 'primary',
-        'display_name', display_name,
-        'server', server
-      ) as properties
-    from
-      mastodon_toot
-    where
-      timeline = 'home'
-      and server = $1
-  EOQ
-}
-
-query "mastodon_recent_toots_person_reblog_person" {
-  sql = <<EOQ
-    select
-      reblog_username as id,
-      reblog_username as title,
-      'reblog_user' as category,
-      jsonb_build_object(
-        'type', 'reblog',
-        'server', reblog_server,
-        'id', id,
-        'username', username,
-        'display_name', display_name,
-        'server', server,
-        'reblog_server', reblog_server,
-        'reblog_username', reblog_username,
-        'instance_qualified_reblog_url', instance_qualified_reblog_url,
-        'display_name', reblog -> 'account' ->> display_name,
-        'followers', reblog -> 'account' ->> 'followers_count',
-        'following', reblog -> 'account' ->> 'following_count',
-        'content', reblog ->> 'content'
-      ) as properties
-    from
-      mastodon_toot
-    where
-      timeline = 'home'
-      and server = $1
-  EOQ
-}
-
-query "mastodon_recent_toots_primary_person_to_server" {
-  sql = <<EOQ
-    select
-      username as from_id,
-      server as to_id,
-      'belongs to' as title,
-      jsonb_build_object(
-        'username', username,
-        'display_name', display_name
-      ) as properties
-    from
-      mastodon_toot
-    where
-      timeline = 'home'
-      and server = $1
-  EOQ
-}
-
-query "mastodon_recent_toots_reblog_person_to_server" {
-  sql = <<EOQ
-    select
-      reblog_username as from_id,
-      reblog_server as to_id,
-      'belongs to' as title,
-      jsonb_build_object(
-        'username', username,
-        'display_name', display_name
-      ) as properties
-    from
-      mastodon_toot
-    where
-      timeline = 'home'
-      and server = $1
-  EOQ
-}
-
-query "mastodon_recent_toots_person_boost_person" {
-  sql = <<EOQ
-    select
-      username as from_id,
-      reblog_username as to_id,
-      'boosts' as title,
-      'reblog_user_edge' as category,
-      jsonb_build_object(
-        'id', id,
-        'username', username,
-        'display_name', display_name,
-        'server', server,
-        'reblog_server', reblog_server,
-        'reblog_username', reblog_username
-      ) as properties
-    from
-      mastodon_toot
-    where
-      timeline = 'home'
-      and server = $1
-      and reblog is not null
-    limit ${local.limit}
-  EOQ
-}
-
-// for graph 2
-
-query "mastodon_recent_toots_primary_server_all" {
-  sql = <<EOQ
-    select distinct
-      server as id,
-      server as title,
-      'server' as category,
-      jsonb_build_object(
-          'server', server,
-          'reblog_server', reblog_server
-      ) as properties
-    from 
-      mastodon_toot
-    where
-      timeline = 'home'
-    limit ${local.limit}
-EOQ
-}
-
-query "mastodon_recent_toots_reblog_server_all" {
-  sql = <<EOQ
-    select distinct
-      reblog_server as id,
-      reblog_server as title,
-      'reblog_server' as category,
-      jsonb_build_object(
-          'server', server,
-          'reblog_server', reblog_server
-      ) as properties
-    from 
-      mastodon_toot
-    where
-      timeline = 'home'
-    limit ${local.limit}
-EOQ
-}
-
-
-query "mastodon_recent_toots_server_reblog_server" {
-  sql = <<EOQ
-    select distinct
-      server as from_id,
-      reblog_server as to_id,
-      'boosts' as title
-    from 
-      mastodon_toot
-    where
-      timeline = 'home'
-EOQ
 }
 

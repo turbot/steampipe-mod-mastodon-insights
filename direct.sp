@@ -1,5 +1,5 @@
 dashboard "Direct" {
-  
+
   tags = {
     service = "Mastodon"
   }
@@ -55,7 +55,7 @@ Direct
 
   }
 
-  container { 
+  container {
 
     table {
       title = "direct: recent toots"

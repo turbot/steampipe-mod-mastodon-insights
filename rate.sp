@@ -1,5 +1,5 @@
 dashboard "Rate" {
-  
+
   tags = {
     service = "Mastodon"
   }

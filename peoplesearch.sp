@@ -1,5 +1,5 @@
 dashboard "PeopleSearch" {
-  
+
   tags = {
     service = "Mastodon"
   }
@@ -58,7 +58,7 @@ PeopleSearch
   }
 
   container {
-  
+
     table {
       args = [ self.input.search_term.value ]
       query = query.search_people

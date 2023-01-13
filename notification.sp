@@ -1,5 +1,5 @@
 dashboard "Notification" {
-  
+
   tags = {
     service = "Mastodon"
   }
@@ -51,11 +51,11 @@ Notification
 
     input "limit" {
       base = input.limit
-    } 
+    }
 
   }
 
-  container { 
+  container {
 
     table {
       args = [ self.input.limit.value ]

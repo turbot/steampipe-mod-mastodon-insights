@@ -1,5 +1,5 @@
 dashboard "Me" {
-  
+
   tags = {
     service = "Mastodon"
   }
@@ -49,7 +49,7 @@ Me
 
     input "limit" {
       base = input.limit
-    } 
+    }
 
   }
 
@@ -69,9 +69,9 @@ Me
             day desc
           limit $1
         )
-        select 
+        select
           day,
-          count(*)    
+          count(*)
         from
           data
         group by
@@ -112,7 +112,7 @@ Me
       EOQ
     }
 
-  container { 
+  container {
 
     table {
       args = [ self.input.limit.value ]

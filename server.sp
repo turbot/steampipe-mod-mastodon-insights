@@ -1,5 +1,5 @@
 dashboard "Server" {
-  
+
   tags = {
     service = "Mastodon"
   }
@@ -62,7 +62,7 @@ Server
           statuses
         from
           mastodon_weekly_activity
-        order by 
+        order by
           week
       EOQ
     }
@@ -77,7 +77,7 @@ Server
           logins
         from
           mastodon_weekly_activity
-        order by 
+        order by
           week
       EOQ
     }

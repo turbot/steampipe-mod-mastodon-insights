@@ -1,5 +1,5 @@
 dashboard "StatusSearch" {
-  
+
   tags = {
     service = "Mastodon"
   }
@@ -68,5 +68,5 @@ StatusSearch
     }
   }
 
-}  
+}
 

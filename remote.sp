@@ -1,5 +1,5 @@
 dashboard "Remote" {
-  
+
   tags = {
     service = "Mastodon"
   }
@@ -47,7 +47,7 @@ Remote
     table {
       width = 4
       sql = <<EOQ
-      select 
+      select
         _ctx ->> 'connection_name' as connection,
         name as server
       from
@@ -60,7 +60,7 @@ Remote
       title = "limit"
       sql = <<EOQ
         with limits(label) as (
-          values 
+          values
             ( '50' ),
             ( '100' ),
             ( '200' ),
@@ -69,14 +69,14 @@ Remote
         select
           label,
           label::int as value
-        from 
+        from
           limits
       EOQ
-    }    
+    }
 
   }
 
-  container { 
+  container {
 
     table {
       title = "remote: recent toots"

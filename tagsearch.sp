@@ -1,5 +1,5 @@
 dashboard "TagSearch" {
-  
+
   tags = {
     service = "Mastodon"
   }
@@ -57,7 +57,7 @@ TagSearch
   }
 
   container {
-  
+
     table {
       args = [ self.input.search_term.value ]
       query = query.search_hashtag
@@ -68,5 +68,5 @@ TagSearch
 
   }
 
-}  
+}
 

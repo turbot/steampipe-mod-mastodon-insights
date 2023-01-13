@@ -98,8 +98,8 @@ query "search_status" {
     )
     select
       account,
-      person || 
-        case 
+      person ||
+        case
           when in_reply_to is null then ''
           else in_reply_to
         end as person,
@@ -144,8 +144,8 @@ query "favorite" {
     )
     select
       account_url,
-      person || 
-        case 
+      person ||
+        case
           when in_reply_to is null then ''
           else in_reply_to
         end as person,
@@ -161,31 +161,31 @@ query "favorite" {
 
 /*
 The duplicate code in the above three queries could be DRYed out using a Postgres function parameterized by table name. But there's
-not currently a standard way to deploy a mod that defines and uses functions. If we could alternatively parameterize queries by 
-table name in HCL that would be very nice. 
+not currently a standard way to deploy a mod that defines and uses functions. If we could alternatively parameterize queries by
+table name in HCL that would be very nice.
 */
 
 query "search_hashtag" {
   sql = <<EOQ
     with data as (
-      select 
+      select
         _ctx ->> 'connection_name' as connection,
         name,
         url,
         ( jsonb_array_elements(history) ->> 'uses' )::int as uses
-      from 
-        mastodon_search_hashtag 
-      where 
+      from
+        mastodon_search_hashtag
+      where
         query = $1
       ),
       uses as (
-        select 
+        select
           connection,
           name,
           url || '.rss' as feed_link,
           sum(uses) as recent_uses
-        from 
-          data 
+        from
+          data
         group
           by connection, name, url
       )
@@ -224,9 +224,9 @@ query "search_people" {
         following_count,
         statuses_count as toots,
         note
-      from 
+      from
         mastodon_search_account
-      where 
+      where
         query = $1
       order by
         person
@@ -274,14 +274,14 @@ query "followers" {
         f.following_count as following,
         f.statuses_count as toots,
         f.note
-      from 
+      from
         mastodon_followers f
       left join
         data d
       on
         f.id = d.id
     )
-    select 
+    select
       *
     from
       combined
@@ -291,8 +291,8 @@ query "followers" {
 }
 
 /*
-Joining with `mastodon_relationship` is possible, and useful -- I want to see at a glance 
-if a person I follow has followed me back! -- but not yet practical. The API's `accounts/relationships` 
+Joining with `mastodon_relationship` is possible, and useful -- I want to see at a glance
+if a person I follow has followed me back! -- but not yet practical. The API's `accounts/relationships`
 endpoint takes an array of ids, but the `mastodon_relationship` table for now only takes one id at a time because
 you can't make an URL like `accounts/relationships?id[]=1&id[]=2...&id[]=500`. The one-at-a-time approach
 is not only slow, but worse, quickly exhausts the 300-API-calls-per-5-minutes limit if you are following
@@ -461,7 +461,7 @@ query "my_toots" {
         end as url
       from
         mastodon_toot
-      where 
+      where
         timeline = 'me'
       order by
         created_at desc
@@ -479,7 +479,7 @@ query "my_toots" {
 
 query "connection" {
   sql = <<EOQ
-  select 
+  select
     _ctx ->> 'connection_name' as connection,
     name as server
   from

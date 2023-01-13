@@ -1,5 +1,5 @@
 dashboard "Home" {
-  
+
   tags = {
     service = "Mastodon"
   }
@@ -52,7 +52,7 @@ Home
     input "limit" {
       base = input.limit
     }
-    
+
     input "boosts" {
       width = 2
       title = "boosts"
@@ -72,8 +72,8 @@ Home
     }
 
   }
-  
-  container { 
+
+  container {
 
     table {
       title = "home: recent toots"
