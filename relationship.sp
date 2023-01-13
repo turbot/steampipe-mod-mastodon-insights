@@ -53,51 +53,26 @@ Relationships
 
       title = "boosts from selected server"
 
-      category "server" {
-        color = "yellow"
-        icon = "server"
-        href  = "https://{{.properties.'server'}}"
-      }
-
-      category "reblog_server" {
-        color = "brown"
-        icon = "server"
-        href  = "https://{{.properties.'server'}}"
-      }
-
-      category "user" {
-        color = "orange"
-        icon = "user"
-        href  = "{{.properties.'instance_qualified_account_url'}}"
-      }
-
-      category "reblog_user_edge" {
-        color = "green"
-        href = "https://{{.properties.'server'}}/@{{.properties.'reblog_username'}}@{{.properties.'reblog_server'}}/{{.properties.'id'}}"
-      }
-
-      category "reblogged_user_node" {
-        color = "green"
-        icon = "user"
-        href  = "{{.properties.'instance_qualified_reblog_url'}}"
-      }
-
       node {
+        category = category.server
         args = [ self.input.server.value ]
         query = query.mastodon_recent_toots_primary_server
       }
 
       node {
+        category = category.reblog_server        
         args = [ self.input.server.value ]
         query = query.mastodon_recent_toots_reblog_server
       }
 
       node {
+        category = category.user
         args = [ self.input.server.value ]
         query = query.mastodon_recent_toots_primary_person
       }
 
       node {
+        category = category.reblog_user
         args = [ self.input.server.value ]
         query = query.mastodon_recent_toots_person_reblog_person
       }
@@ -126,23 +101,13 @@ Relationships
 
       title = "boosts from server to server"
 
-      category "server" {
-        color = "yellow"
-        icon = "server"
-        href  = "https://{{.properties.'server'}}"
-      }
-
-      category "reblog_server" {
-        color = "brown"
-        icon = "server"
-        href  = "https://{{.properties.'server'}}"
-      }
-
       node {
+        category = category.server
         query = query.mastodon_recent_toots_primary_server_all
       }
 
       node {
+        category = category.reblog_server
         query = query.mastodon_recent_toots_reblog_server_all
       }
 
@@ -219,7 +184,7 @@ query "mastodon_recent_toots_person_reblog_person" {
     select
       reblog_username as id,
       reblog_username as title,
-      'reblogged_user_node' as category,
+      'reblog_user' as category,
       jsonb_build_object(
         'type', 'reblog',
         'server', reblog_server,
