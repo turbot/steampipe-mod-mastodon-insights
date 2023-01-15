@@ -60,15 +60,13 @@ Relationships
             reblog_server as id,
             reblog_server as title,
             jsonb_build_object(
-              'username', username,
               'server', server,
-              'reblog_username', reblog_username,
               'reblog_server', reblog_server
             ) as properties
           from
-             mastodon_boosts()
+            mastodon_boosts()
           where
-             server = $1
+            server = $1
         EOQ
       }
 
@@ -82,15 +80,13 @@ Relationships
             server as id,
             server as title,
             jsonb_build_object(
-              'username', username,
               'server', server,
-              'reblog_username', reblog_username,
               'reblog_server', reblog_server
             ) as properties
           from
-             mastodon_boosts()
+            mastodon_boosts()
           where
-             server = $1
+            server = $1
         EOQ
       }
 
@@ -107,7 +103,7 @@ Relationships
               'instance_qualified_account_url', instance_qualified_account_url
             ) as properties
           from
-             mastodon_boosts()
+            mastodon_boosts()
           where
             server = $1
         EOQ
@@ -123,10 +119,11 @@ Relationships
             jsonb_build_object(
               'server', server,
               'reblog_server', reblog_server,
-              'instance_qualified_reblog_url', instance_qualified_reblog_url
+              'instance_qualified_reblog_url', instance_qualified_reblog_url,
+              'content', reblog ->> 'content'
             ) as properties
           from
-             mastodon_boosts()
+            mastodon_boosts()
           where
             server = $1
         EOQ
@@ -145,7 +142,21 @@ Relationships
               'reblog_server', reblog_server
           ) as properties
           from
-             mastodon_boosts()
+            mastodon_boosts()
+        EOQ
+      }
+
+      edge {
+        args = [ self.input.server.value ]
+        sql = <<EOQ
+          select
+            reblog_username as from_id,
+            reblog_server as to_id,
+            'belongs to' as title
+          from
+            mastodon_boosts()
+          where
+            server = $1
         EOQ
       }
 
@@ -158,36 +169,19 @@ Relationships
             reblog_username as to_id,
             'boosts' as title,
             jsonb_build_object(
-              'username', username,
-              'server', server,
-              'content', content,
               'reblog_username', reblog_username,
               'reblog_server', reblog_server,
-              'instance_qualified_url', instance_qualified_url,
               'content', reblog ->> 'content'
             ) as properties
           from
-             mastodon_boosts()
+            mastodon_boosts()
           where
-             server = $1
-        EOQ
-      }
-
-      edge {
-        args = [ self.input.server.value ]
-        sql = <<EOQ
-          select
-            reblog_username as from_id,
-            reblog_server as to_id,
-            'belongs to' as title
-          from
-             mastodon_boosts()
-          where
-             server = $1
+            server = $1
         EOQ
       }
 
     }
+
   }
 
   container {
