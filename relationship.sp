@@ -120,7 +120,7 @@ Relationships
               'server', server,
               'reblog_server', reblog_server,
               'instance_qualified_reblog_url', instance_qualified_reblog_url,
-              'content', reblog ->> 'content'
+              'content', reblog_content
             ) as properties
           from
             mastodon_boosts()
@@ -171,7 +171,7 @@ Relationships
             jsonb_build_object(
               'reblog_username', reblog_username,
               'reblog_server', reblog_server,
-              'content', reblog ->> 'content'
+              'content', reblog_content
             ) as properties
           from
             mastodon_boosts()
