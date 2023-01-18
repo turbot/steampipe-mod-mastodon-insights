@@ -177,6 +177,7 @@ query "search_hashtag" {
         mastodon_search_hashtag
       where
         query = $1
+      limit ${local.limit}
       ),
       uses as (
         select
