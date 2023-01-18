@@ -354,6 +354,7 @@ query "notification" {
         status_content
       from
         mastodon_notification
+      limit $1
     )
     select
       n.category,
@@ -372,7 +373,6 @@ query "notification" {
       r.id = n.account_id
     order by
       n.created_at desc
-    limit $1
   EOQ
   param "limit" {}
 
