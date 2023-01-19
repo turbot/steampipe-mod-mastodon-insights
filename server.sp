@@ -58,7 +58,7 @@ Server
       title = "toots by week"
       sql = <<EOQ
         select
-          to_char(week, 'MM-DD') as week,
+          to_char(week, 'YYYY-MM-DD') as week,
           statuses
         from
           mastodon_weekly_activity
@@ -72,7 +72,7 @@ Server
       title = "registrations by week"
       sql = <<EOQ
         select
-          to_char(week, 'MM-DD') as week,
+          to_char(week, 'YYYY-MM-DD') as week,
           registrations,
           logins
         from
