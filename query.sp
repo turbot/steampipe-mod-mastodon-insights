@@ -31,6 +31,7 @@ query "timeline" {
     ),
     boosted as (
       select
+        created_at,
         $3 as boost,
         boosted,
         account,
@@ -44,6 +45,7 @@ query "timeline" {
         created_at desc
     )
     select
+      created_at,
       account,
       person ||
         case
@@ -355,14 +357,15 @@ query "notification" {
         status_content
       from
         mastodon_notification
+      limit $1
     )
     select
+      n.created_at,
       n.category,
       n.person,
       n.instance_qualified_account_url,
       case when r.following then '✔️' else '' end as following,
       case when r.followed_by then '✔️' else '' end as followed_by,
-      n.created_at,
       n.status_content as toot,
       n.status_url
     from
