@@ -49,16 +49,11 @@ Notification
       query = query.connection
     }
 
-    input "limit" {
-      base = input.limit
-    }
-
   }
 
   container {
 
     table {
-      args = [ self.input.limit.value ]
       title = "notifications"
       query = query.notification
       column "status_url" {

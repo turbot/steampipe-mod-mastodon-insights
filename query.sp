@@ -347,7 +347,7 @@ query "notification" {
     with notifications as (
       select
         category,
-        account_url,
+        instance_qualified_account_url,
         account_id,
         display_name as person,
         to_char(created_at, 'MM-DD HH24:MI') as created_at,
@@ -355,12 +355,11 @@ query "notification" {
         status_content
       from
         mastodon_notification
-      limit $1
     )
     select
       n.category,
-      n.account_url,
       n.person,
+      n.instance_qualified_account_url,
       case when r.following then '✔️' else '' end as following,
       case when r.followed_by then '✔️' else '' end as followed_by,
       n.created_at,
@@ -375,8 +374,6 @@ query "notification" {
     order by
       n.created_at desc
   EOQ
-  param "limit" {}
-
 }
 
 query "list" {
