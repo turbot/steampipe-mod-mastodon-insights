@@ -353,7 +353,7 @@ query "notification" {
         account_id,
         display_name as person,
         to_char(created_at, 'MM-DD HH24:MI') as created_at,
-        status_url,
+        instance_qualified_status_url,
         status_content
       from
         mastodon_notification
@@ -367,7 +367,7 @@ query "notification" {
       case when r.following then '✔️' else '' end as following,
       case when r.followed_by then '✔️' else '' end as followed_by,
       n.status_content as toot,
-      n.status_url
+      n.instance_qualified_status_url
     from
       notifications n
     join
