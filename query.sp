@@ -437,6 +437,29 @@ query "list_account" {
   EOQ
 }
 
+query "list_account_follows" {
+  sql = <<EOQ
+    with list_account as (
+      select
+        a.id,
+        l.title as list
+      from
+        mastodon_list l
+        join mastodon_list_account a on l.id = a.list_id
+    ),
+    list_account_follows as (
+      select
+        list
+      from
+        mastodon_following
+        left join list_account using (id)
+    )
+    select 'follows listed' as label, count(*) from list_account_follows where list is not null
+    union
+    select 'follows unlisted' as label, count(*) from list_account_follows where list is null
+  EOQ
+}
+
 query "my_toots" {
   sql = <<EOQ
     with data as (

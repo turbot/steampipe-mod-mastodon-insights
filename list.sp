@@ -97,12 +97,21 @@ List
       }
     }
 
-    table {
+    container {
       width = 4
-      query = query.list_account
-      column "people" {
-        wrap = "all"
+
+      table {
+        width = 4
+        query = query.list_account_follows
       }
+
+      table {
+        query = query.list_account
+        column "people" {
+          wrap = "all"
+        }
+      }
+
     }
 
 
