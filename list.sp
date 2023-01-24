@@ -101,7 +101,7 @@ List
       width = 4
 
       table {
-        width = 4
+        width = 6
         query = query.list_account_follows
       }
 

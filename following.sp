@@ -60,7 +60,7 @@ Following
 
     chart {
       title = "follows by month of account creation"
-      width = 6
+      width = 4
       sql = <<EOQ
         select
           to_char(created_at, 'YYYY-MM') as month,
@@ -73,7 +73,7 @@ Following
     }
 
     chart {
-      width = 6
+      width = 4
       type = "donut"
       title = "follows by server domain"
       sql = <<EOQ
@@ -98,6 +98,12 @@ Following
         limit 15
       EOQ
     }
+
+    table {
+      width = 2
+      query = query.list_account_follows
+    }
+
 
 
   }
