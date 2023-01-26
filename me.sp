@@ -67,8 +67,6 @@ Me
             mastodon_toot
           where
             timeline = 'me'
-          order by
-            day desc
           limit $1
         )
         select
@@ -100,6 +98,7 @@ Me
             mastodon_toot
           where
             timeline = 'me'
+          limit $1
         )
         select
           type,
@@ -110,7 +109,6 @@ Me
           type
         order by
           count desc
-        limit $1
       EOQ
     }
 

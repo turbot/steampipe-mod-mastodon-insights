@@ -486,10 +486,10 @@ query "my_toots" {
           else ''
         end as boosted,
         case
-          when reblog -> 'url' is null then
-            content
+          when reblog is null then
+            content || ' ★ ' || (status->>'favourites_count') || ' 🢁 ' || (status->>'reblogs_count')
           else
-            reblog_content
+            reblog_content || ' ★ ' || (reblog->>'favourites_count') || ' 🢁 ' || (reblog->>'reblogs_count')
         end as toot,
         case
           when in_reply_to_account_id is not null then ' 🢂 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
@@ -503,8 +503,6 @@ query "my_toots" {
         mastodon_toot
       where
         timeline = 'me'
-      order by
-        created_at desc
       limit $1
     )
     select
@@ -513,6 +511,8 @@ query "my_toots" {
       url
     from
       data
+    order by
+      created_at desc
   EOQ
   param "limit" {}
 }
