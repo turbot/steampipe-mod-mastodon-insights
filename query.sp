@@ -22,7 +22,9 @@ query "timeline" {
         case
           when reblog -> 'url' is not null then instance_qualified_reblog_url
           else instance_qualified_url
-        end as url
+        end as url,
+        reblog ->> 'reblogs_count' as reblog_count,
+        reblog ->> 'favourites_count' as fave_count
       from
         mastodon_toot
       where
@@ -38,6 +40,8 @@ query "timeline" {
         in_reply_to,
         person,
         toot,
+        reblog_count,
+        fave_count,
         url
       from
         toots
@@ -52,7 +56,7 @@ query "timeline" {
           when in_reply_to is null then ''
           else in_reply_to
         end as person,
-      boosted || ' ' || toot as toot,
+      boosted || ' ' || toot || ' (★ ' || fave_count || ') (🢁 ' || reblog_count || ')' as toot,
       url
     from
       boosted
