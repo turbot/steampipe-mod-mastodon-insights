@@ -487,9 +487,9 @@ query "my_toots" {
         end as boosted,
         case
           when reblog is null then
-            content || ' ★ ' || (status->>'favourites_count') || ' 🢁 ' || (status->>'reblogs_count')
+            substring(content from 1 for 300) || ' ★ ' || (status->>'favourites_count') || ' 🢁 ' || (status->>'reblogs_count')
           else
-            reblog_content || ' ★ ' || (reblog->>'favourites_count') || ' 🢁 ' || (reblog->>'reblogs_count')
+            substring(reblog_content from 1 for 300) || ' ★ ' || (reblog->>'favourites_count') || ' 🢁 ' || (reblog->>'reblogs_count')
         end as toot,
         case
           when in_reply_to_account_id is not null then ' 🢂 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
@@ -507,8 +507,8 @@ query "my_toots" {
     )
     select
       created_at,
-      boosted || ' ' || toot as toot,
-      url
+      url,
+      boosted || ' ' || toot as toot
     from
       data
     order by

@@ -62,7 +62,7 @@ Me
       sql = <<EOQ
         with data as (
           select
-            to_char(created_at, 'MM-DD') as day
+            to_char(created_at, 'YYYY-MM-DD') as day
           from
             mastodon_toot
           where
@@ -118,9 +118,6 @@ Me
       args = [ self.input.limit.value ]
       query = query.my_toots
       column "toot" {
-        wrap = "all"
-      }
-      column "url" {
         wrap = "all"
       }
 
