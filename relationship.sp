@@ -64,9 +64,12 @@ Relationships
               'reblog_server', reblog_server
             ) as properties
           from
-            mastodon_boosts()
+            mastodon_toot
           where
-            server = $1
+            timeline = 'home'
+            and reblog_server is not null
+            and server = $1
+          limit ${local.limit}
         EOQ
       }
 
@@ -84,9 +87,12 @@ Relationships
               'reblog_server', reblog_server
             ) as properties
           from
-            mastodon_boosts()
+            mastodon_toot
           where
-            server = $1
+            timeline = 'home'
+            and reblog_server is not null
+            and server = $1
+          limit ${local.limit}
         EOQ
       }
 
@@ -103,9 +109,12 @@ Relationships
               'instance_qualified_account_url', instance_qualified_account_url
             ) as properties
           from
-            mastodon_boosts()
+            mastodon_toot
           where
-            server = $1
+            timeline = 'home'
+            and reblog_server is not null
+            and server = $1
+          limit ${local.limit}
         EOQ
       }
 
@@ -123,9 +132,12 @@ Relationships
               'content', reblog_content
             ) as properties
           from
-            mastodon_boosts()
+            mastodon_toot
           where
-            server = $1
+            timeline = 'home'
+            and reblog_server is not null
+            and server = $1
+          limit ${local.limit}
         EOQ
       }
 
@@ -142,7 +154,11 @@ Relationships
               'reblog_server', reblog_server
           ) as properties
           from
-            mastodon_boosts()
+            mastodon_toot
+          where
+            timeline = 'home'
+            and reblog_server is not null
+          limit ${local.limit}
         EOQ
       }
 
@@ -154,9 +170,12 @@ Relationships
             reblog_server as to_id,
             'belongs to' as title
           from
-            mastodon_boosts()
+            mastodon_toot
           where
-            server = $1
+            timeline = 'home'
+            and reblog_server is not null
+            and server = $1
+          limit ${local.limit}
         EOQ
       }
 
@@ -174,9 +193,12 @@ Relationships
               'content', reblog_content
             ) as properties
           from
-            mastodon_boosts()
+            mastodon_toot
           where
-            server = $1
+            timeline = 'home'
+            and reblog_server is not null
+            and server = $1
+          limit ${local.limit}
         EOQ
       }
 
@@ -201,7 +223,11 @@ Relationships
               'reblog_server', reblog_server
             ) as properties
           from
-            mastodon_boosts()
+            mastodon_toot
+          where
+            timeline = 'home'
+            and reblog_server is not null
+          limit ${local.limit}
         EOQ
       }
 
@@ -216,7 +242,11 @@ Relationships
               'reblog_server', reblog_server
             ) as properties
           from
-            mastodon_boosts()
+            mastodon_toot
+          where
+            timeline = 'home'
+            and reblog_server is not null
+          limit ${local.limit}
         EOQ
       }
 
@@ -228,28 +258,16 @@ Relationships
             reblog_server as to_id,
             'boosts' as title
           from
-            mastodon_boosts()
+            mastodon_toot
+          where
+            timeline = 'home'
+            and reblog_server is not null
+          limit ${local.limit}
         EOQ
       }
 
     }
 
-  }
-
-  with "mastodon_boosts" {
-    sql = <<EOQ
-      create or replace function public.mastodon_boosts()
-      returns setof mastodon_toot as $$
-        select
-          *
-        from
-          mastodon_toot
-        where
-          timeline = 'home'
-          and reblog_server is not null
-          limit ${local.limit}
-      $$ language sql;
-    EOQ
   }
 
 }

@@ -25,19 +25,28 @@ input "server" {
   sql = <<EOQ
     with data as (
       select
+        server
+      from
+        mastodon_toot
+      where
+        timeline = 'home'
+        and reblog_server is not null
+      limit ${local.limit}
+    ),
+    counts as (
+      select
         server,
         count(*)
       from
-        mastodon_boosts()
+        data
       group by
         server
-      limit ${local.limit}
     )
     select
       server || ' (' || count || ')' as label,
       server as value
     from
-      data
+      counts
     order by
       server
     EOQ
