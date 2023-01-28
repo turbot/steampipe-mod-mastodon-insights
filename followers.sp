@@ -75,7 +75,7 @@ Followers
     chart {
       width = 6
       type = "donut"
-      title = "followers by server domain"
+      title = "followers by server"
       sql = <<EOQ
         with domains as (
           select
