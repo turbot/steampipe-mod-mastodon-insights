@@ -10,7 +10,7 @@ query "timeline" {
           else
             reblog_content
         end as toot,
-        to_char(created_at, 'MM-DD HH24:MI') as created_at,
+        to_char(created_at, 'YYYY-MM-DD HH24:MI') as created_at,
         case
           when reblog -> 'url' is not null then '🢁'
           else ' '
@@ -142,7 +142,7 @@ query "favorite" {
           else
             reblog_content
         end as toot,
-        to_char(created_at, 'MM-DD HH24:MI') as created_at,
+        to_char(created_at, 'YYYY-MM-DD HH24:MI') as created_at,
         case
           when reblog -> 'url' is not null then '🢁'
           else ''
@@ -160,6 +160,7 @@ query "favorite" {
       limit $1
     )
     select
+      created_at,
       account_url,
       person ||
         case

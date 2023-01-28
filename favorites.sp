@@ -55,6 +55,52 @@ Favorites
 
   }
 
+  container {
+
+    chart {
+      args = [ self.input.limit.value ]
+      width = 6
+      title = "favorites by day"
+      sql = <<EOQ
+        select
+          to_char(created_at, 'YY-MM-DD') as day,
+          count(*)
+        from
+          mastodon_favorite
+        group by
+          day
+        limit $1
+      EOQ
+    }
+
+    chart {
+      args = [ self.input.limit.value ]
+      type = "donut"
+      width = 6
+      title = "favorites by person"
+      sql = <<EOQ
+        with data as (
+          select
+            case when display_name = '' then username else display_name end as person,
+            count(*)
+          from
+            mastodon_favorite
+          group by
+            person
+        limit $1
+        )
+        select
+          *
+        from
+          data
+        order by
+          count desc
+      EOQ
+    }
+
+
+  }
+
 
   container {
 
