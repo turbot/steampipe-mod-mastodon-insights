@@ -187,48 +187,34 @@ query "search_hashtag" {
   sql = <<EOQ
     with data as (
       select
-        _ctx ->> 'connection_name' as connection,
         name,
-        url,
-        ( jsonb_array_elements(history) ->> 'uses' )::int as uses
+        url || '.rss' as feed_link
       from
         mastodon_search_hashtag
       where
         query = $1
-      limit ${local.limit}
-      ),
-      uses as (
-        select
-          connection,
-          name,
-          url || '.rss' as feed_link,
-          sum(uses) as recent_uses
-        from
-          data
-        group
-          by connection, name, url
-      )
-      select
-        u.connection,
-        u.name,
-        r.guid as link,
-        to_char(r.published, 'YYYY-MM-DD') as published,
-        (
-          select string_agg(trim(JsonString::text, '"'), ', ')
-          from jsonb_array_elements(r.categories) JsonString
-        ) as categories
-      from
-        uses u
-      join
-        rss_item r
-      on
-        r.feed_link = u.feed_link
-      where
-        recent_uses > 1
-      order by
-        recent_uses desc, published desc
+        and name = query
+      limit 1
+    )
+    select
+      to_char(r.published, 'YYYY-MM-DD') as published,
+      d.name as tag,
+      (
+        select string_agg(trim(JsonString::text, '"'), ', ')
+        from jsonb_array_elements(r.categories) JsonString
+      ) as categories,
+      r.guid as link,
+      ( select content as toot from mastodon_toot where timeline = 'search_status' and query = r.guid ) as content
+    from
+      data d
+    join
+      rss_item r
+    on
+      r.feed_link = d.feed_link
+    order by
+      r.published desc
+    limit 10
     EOQ
-    param "search_term" {}
 }
 
 query "search_people" {

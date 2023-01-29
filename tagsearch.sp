@@ -9,8 +9,6 @@ dashboard "TagSearch" {
       value = <<EOT
 [Direct](${local.host}/mastodon.dashboard.Direct)
 🞄
-[Home](${local.host}/mastodon.dashboard.Home)
-🞄
 [Favorites](${local.host}/mastodon.dashboard.Favorites)
 🞄
 [Followers](${local.host}/mastodon.dashboard.Followers)
@@ -18,6 +16,8 @@ dashboard "TagSearch" {
 [Following](${local.host}/mastodon.dashboard.Following)
 🞄
 [List](${local.host}/mastodon.dashboard.List)
+🞄
+[Home](${local.host}/mastodon.dashboard.Home)
 🞄
 [Local](${local.host}/mastodon.dashboard.Local)
 🞄
@@ -54,6 +54,7 @@ TagSearch
       type = "text"
       title = "search hashtags"
     }
+
   }
 
   container {
@@ -62,6 +63,9 @@ TagSearch
       args = [ self.input.search_term.value ]
       query = query.search_hashtag
       column "categories" {
+        wrap = "all"
+      }
+      column "content" {
         wrap = "all"
       }
     }
