@@ -35,6 +35,13 @@ brew tap turbot/tap
 brew install steampipe
 ```
 
+Install the RSS plugin (which [augments](https://blog.jonudell.net/2022/12/06/mastodon-steampipe-and-rss/) the Mastodon API)
+
+```sh
+steampipe plugin install rss
+```
+
+
 Install and configure the [Mastodon plugin](https://github.com/turbot/steampipe-plugin-mastodon).
 
 Clone:
