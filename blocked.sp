@@ -130,7 +130,7 @@ Blocked
         order by
           "blocking server count" desc
     EOQ
-    column "blocked by list" {
+    column "blocking server list" {
       wrap = "all"
     }
   }
