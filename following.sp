@@ -7,6 +7,8 @@ dashboard "Following" {
   container {
     text {
       value = <<EOT
+[Blocked](${local.host}/mastodon.dashboard.Blocked)
+🞄
 [Direct](${local.host}/mastodon.dashboard.Direct)
 🞄
 [Favorites](${local.host}/mastodon.dashboard.Favorites)
