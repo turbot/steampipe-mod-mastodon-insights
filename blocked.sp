@@ -17,7 +17,7 @@ dashboard "Blocked" {
     text {
       value = <<EOT
 Blocked
-.
+🞄
 [Direct](${local.host}/mastodon.dashboard.Direct)
 🞄
 [Favorites](${local.host}/mastodon.dashboard.Favorites)
@@ -68,7 +68,7 @@ Blocked
             mastodon_toot
           where
             timeline = 'home'
-          limit 500
+          limit 300
         ),
         blocking_and_blocked as (
           select
@@ -105,7 +105,7 @@ Blocked
             mastodon_toot
           where
             timeline = 'home'
-          limit 500
+          limit 300
         ),
         blocking_and_blocked as (
           select
