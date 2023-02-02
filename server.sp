@@ -51,6 +51,11 @@ Server
       query = query.connection
     }
 
+    input "server" {
+      base = input.server
+    }
+
+
   }
 
   container {
@@ -58,12 +63,15 @@ Server
     chart {
       width = 6
       title = "toots by week"
+      args = [ self.input.server.value ]
       sql = <<EOQ
         select
           to_char(week, 'YYYY-MM-DD') as week,
           statuses
         from
           mastodon_weekly_activity
+        where
+          server = 'https://' || $1
         order by
           week
       EOQ
@@ -72,6 +80,7 @@ Server
     chart {
       width = 6
       title = "registrations by week"
+      args = [ self.input.server.value ]
       sql = <<EOQ
         select
           to_char(week, 'YYYY-MM-DD') as week,
@@ -79,6 +88,8 @@ Server
           logins
         from
           mastodon_weekly_activity
+        where
+          server = 'https://' || $1
         order by
           week
       EOQ
@@ -90,8 +101,17 @@ Server
     table {
       width = 6
       title = "rules"
+      args = [ self.input.server.value ]
       sql = <<EOQ
-        select id as "#", rule from mastodon_rule order by id
+        select 
+          id as "#", 
+          rule
+        from 
+          mastodon_rule
+        where
+          server = 'https://' || $1
+        order by
+          id::int
       EOQ
     }
   }
