@@ -365,11 +365,13 @@ query "notification" {
       n.created_at,
       n.category,
       n.person,
-      n.instance_qualified_account_url,
       case when r.following then '✔️' else '' end as following,
       case when r.followed_by then '✔️' else '' end as followed_by,
-      n.status_content as toot,
-      n.instance_qualified_status_url
+      substring(n.status_content from 1 for 200) as toot,
+      case
+        when n.instance_qualified_status_url != '' then n.instance_qualified_status_url
+        else n.instance_qualified_account_url
+      end as url
     from
       notifications n
     join
