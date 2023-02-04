@@ -87,9 +87,6 @@ Home
       column "toot" {
         wrap = "all"
       }
-      column "url" {
-        wrap = "all"
-      }
 
     }
 

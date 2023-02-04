@@ -2,7 +2,6 @@ query "timeline" {
   sql = <<EOQ
     with toots as (
       select
-        instance_qualified_account_url,
         case when display_name = '' then username else display_name end as person,
         case
           when reblog -> 'url' is null then
@@ -43,7 +42,6 @@ query "timeline" {
         created_at,
         $3 as boost,
         boosted,
-        instance_qualified_account_url,
         in_reply_to,
         person,
         toot,
@@ -58,7 +56,6 @@ query "timeline" {
     )
     select
       created_at,
-      instance_qualified_account_url,
       person ||
         case
           when in_reply_to is null then ''
@@ -134,7 +131,6 @@ query "favorite" {
   sql = <<EOQ
     with toots as (
       select
-        instance_qualified_account_url,
         case when display_name = '' then username else display_name end as person,
         case
           when reblog -> 'url' is null then
@@ -158,13 +154,12 @@ query "favorite" {
     )
     select
       created_at,
-      instance_qualified_account_url,
       person ||
         case
           when in_reply_to is null then ''
           else in_reply_to
         end as person,
-      boosted || ' ' || toot as toot,
+      boosted || ' ' || substring(toot from 1 for 200) as toot,
       instance_qualified_url
     from
       toots
@@ -482,9 +477,9 @@ query "my_toots" {
           else ''
         end as in_reply_to,
         case
-          when reblog -> 'url' is not null then reblog ->> 'url'
-          else url
-        end as url
+          when reblog -> 'url' is not null then instance_qualified_reblog_url
+          else instance_qualified_url
+        end as instance_qualified_url
       from
         mastodon_toot
       where
@@ -493,7 +488,7 @@ query "my_toots" {
     )
     select
       created_at,
-      url,
+      instance_qualified_url,
       boosted || ' ' || toot as toot
     from
       data
