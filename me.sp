@@ -64,7 +64,7 @@ Me
       sql = <<EOQ
         with data as (
           select
-            to_char(created_at, 'YYYY-MM-DD') as day
+            to_char(created_at, 'YY-MM-DD') as day
           from
             mastodon_toot
           where
