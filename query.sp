@@ -2,7 +2,7 @@ query "timeline" {
   sql = <<EOQ
     with toots as (
       select
-        account_url as account,
+        instance_qualified_account_url,
         case when display_name = '' then username else display_name end as person,
         case
           when reblog -> 'url' is null then
@@ -43,7 +43,7 @@ query "timeline" {
         created_at,
         $3 as boost,
         boosted,
-        account,
+        instance_qualified_account_url,
         in_reply_to,
         person,
         toot,
@@ -58,7 +58,7 @@ query "timeline" {
     )
     select
       created_at,
-      account,
+      instance_qualified_account_url,
       person ||
         case
           when in_reply_to is null then ''
@@ -120,7 +120,7 @@ query "search_status" {
           when in_reply_to is null then ''
           else in_reply_to
         end as person,
-      boosted || ' ' || toot as toot,
+      boosted || ' ' || substring(toot from 1 for 200) as toot,
       url
     from
       toots
@@ -134,7 +134,7 @@ query "favorite" {
   sql = <<EOQ
     with toots as (
       select
-        instance_qualified_account_url as account_url,
+        instance_qualified_account_url,
         case when display_name = '' then username else display_name end as person,
         case
           when reblog -> 'url' is null then
@@ -151,24 +151,21 @@ query "favorite" {
           when in_reply_to_account_id is not null then ' 🢂 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
           else ''
         end as in_reply_to,
-        case
-          when reblog -> 'url' is not null then reblog ->> 'url'
-          else url
-        end as url
+        instance_qualified_url
       from
         mastodon_favorite
       limit $1
     )
     select
       created_at,
-      account_url,
+      instance_qualified_account_url,
       person ||
         case
           when in_reply_to is null then ''
           else in_reply_to
         end as person,
       boosted || ' ' || toot as toot,
-      url
+      instance_qualified_url
     from
       toots
     order by
@@ -222,7 +219,7 @@ query "search_people" {
     with data as (
       select
         id,
-        instance_qualified_account_url as account_url,
+        url,
         case when display_name = '' then username else display_name end as person,
         to_char(created_at, 'YYYY-MM-DD') as created_at,
         followers_count,
@@ -237,7 +234,7 @@ query "search_people" {
         person
     )
     select
-      d.account_url,
+      d.url,
       d.person,
       case when r.following then '✔️' else '' end as i_follow,
       case when r.followed_by then '✔️' else '' end as follows_me,
@@ -272,7 +269,7 @@ query "followers" {
     combined as (
       select
         d.list,
-        f.instance_qualified_account_url as account_url,
+        f.instance_qualified_account_url,
         case when f.display_name = '' then f.username else f.display_name end as person,
         to_char(f.created_at, 'YYYY-MM-DD') as since,
         f.followers_count as followers,
@@ -323,7 +320,7 @@ query "following" {
     combined as (
       select
         d.list,
-        f.instance_qualified_account_url as account_url,
+        f.instance_qualified_account_url,
         case when f.display_name = '' then f.username else f.display_name end as person,
         to_char(f.created_at, 'YYYY-MM-DD') as since,
         f.followers_count as followers,
