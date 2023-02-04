@@ -57,7 +57,7 @@ Blocked
   container {
 
     table {
-      width = 5
+      width = 4
       title = "blocking servers in the home timeline by count of servers they block"
       sql = <<EOQ
         with servers as (
@@ -94,7 +94,7 @@ Blocked
     }
 
     table {
-      width = 6
+      width = 8
       title = "blocked servers by count of blocking servers in the home timeline"
       sql = <<EOQ
         with servers as (
