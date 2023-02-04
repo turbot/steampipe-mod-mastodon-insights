@@ -83,18 +83,18 @@ Favorites
       sql = <<EOQ
         with data as (
           select
-            case when display_name = '' then username else display_name end as person,
-            count(*)
+            case when display_name = '' then username else display_name end as person
           from
             mastodon_favorite
-          group by
-            person
-        limit $1
-        )
+          limit $1
+          )
         select
-          *
+          person,
+          count(*)
         from
           data
+        group by
+          person
         order by
           count desc
       EOQ

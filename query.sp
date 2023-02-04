@@ -165,6 +165,7 @@ query "favorite" {
       toots
     order by
       created_at desc
+    limit $1
   EOQ
   param "limit" {}
 }
