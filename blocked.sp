@@ -5,15 +5,6 @@ dashboard "Blocked" {
   }
 
   container {
-
-    table {
-      width = 4
-      query = query.connection
-    }
-
-  }
-
-  container {
     text {
       value = <<EOT
 Blocked
@@ -53,6 +44,15 @@ Blocked
     }
   }
 
+
+  container {
+
+    table {
+      width = 4
+      query = query.connection
+    }
+
+  }
 
   container {
 
