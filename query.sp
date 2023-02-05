@@ -215,7 +215,7 @@ query "search_people" {
     with data as (
       select
         id,
-        url,
+        instance_qualified_account_url,
         case when display_name = '' then username else display_name end as person,
         to_char(created_at, 'YYYY-MM-DD') as created_at,
         followers_count,
@@ -230,7 +230,7 @@ query "search_people" {
         person
     )
     select
-      d.url,
+      d.instance_qualified_account_url,
       d.person,
       case when r.following then '✔️' else '' end as i_follow,
       case when r.followed_by then '✔️' else '' end as follows_me,
