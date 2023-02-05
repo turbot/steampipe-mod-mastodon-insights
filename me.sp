@@ -57,6 +57,8 @@ Me
 
   }
 
+  container {
+
     chart {
       width = 6
       title = "my toots by day"
@@ -113,6 +115,8 @@ Me
           count desc
       EOQ
     }
+
+  }
 
   container {
 
