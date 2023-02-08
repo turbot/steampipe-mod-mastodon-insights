@@ -103,10 +103,10 @@ Server
       title = "rules"
       args = [ self.input.server.value ]
       sql = <<EOQ
-        select 
-          id as "#", 
+        select
+          id as "#",
           rule
-        from 
+        from
           mastodon_rule
         where
           server = 'https://' || $1
