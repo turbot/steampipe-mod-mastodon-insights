@@ -11,11 +11,11 @@ query "timeline" {
         end as toot,
         to_char(created_at, 'YYYY-MM-DD HH24:MI') as created_at,
         case
-          when reblog -> 'url' is not null then '🢁'
+          when reblog -> 'url' is not null then '▲'
           else ' '
         end as boosted,
         case
-          when in_reply_to_account_id is not null then ' 🢂 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
+          when in_reply_to_account_id is not null then ' → ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
           else ''
         end as in_reply_to,
         case
@@ -62,7 +62,7 @@ query "timeline" {
           else in_reply_to
         end as person,
       case
-        when reblog is not null then boosted || ' ' || toot || ' ★ ' || fave_count || ' 🢁 ' || reblog_count
+        when reblog is not null then boosted || ' ' || toot || ' ★ ' || fave_count || ' ▲ ' || reblog_count
         else boosted || ' ' || toot
       end as toot,
       url
@@ -92,11 +92,11 @@ query "search_status" {
         end as toot,
         to_char(created_at, 'MM-DD HH24:MI') as created_at,
         case
-          when reblog -> 'url' is not null then '🢁'
+          when reblog -> 'url' is not null then '▲'
           else ''
         end as boosted,
         case
-          when in_reply_to_account_id is not null then ' 🢂 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
+          when in_reply_to_account_id is not null then ' → ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
           else ''
         end as in_reply_to,
         case
@@ -140,11 +140,11 @@ query "favorite" {
         end as toot,
         to_char(created_at, 'YYYY-MM-DD HH24:MI') as created_at,
         case
-          when reblog -> 'url' is not null then '🢁'
+          when reblog -> 'url' is not null then '▲'
           else ''
         end as boosted,
         case
-          when in_reply_to_account_id is not null then ' 🢂 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
+          when in_reply_to_account_id is not null then ' → ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
           else ''
         end as in_reply_to,
         instance_qualified_url
@@ -465,17 +465,17 @@ query "my_toots" {
         account_url as account,
         to_char(created_at, 'YYYY-MM-DD HH24:MI') as created_at,
         case
-          when reblog -> 'url' is not null then '🢁'
+          when reblog -> 'url' is not null then '▲'
           else ''
         end as boosted,
         case
           when reblog is null then
-            substring(content from 1 for 300) || ' ★ ' || (status->>'favourites_count') || ' 🢁 ' || (status->>'reblogs_count')
+            substring(content from 1 for 300) || ' ★ ' || (status->>'favourites_count') || ' ▲ ' || (status->>'reblogs_count')
           else
-            substring(reblog_content from 1 for 300) || ' ★ ' || (reblog->>'favourites_count') || ' 🢁 ' || (reblog->>'reblogs_count')
+            substring(reblog_content from 1 for 300) || ' ★ ' || (reblog->>'favourites_count') || ' ▲ ' || (reblog->>'reblogs_count')
         end as toot,
         case
-          when in_reply_to_account_id is not null then ' 🢂 ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
+          when in_reply_to_account_id is not null then ' → ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
           else ''
         end as in_reply_to,
         case
