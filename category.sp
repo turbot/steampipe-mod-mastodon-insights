@@ -31,3 +31,18 @@ category "boosted_person" {
 category "boost" {
   color = "gray"
 }
+
+category "tagger" {
+  color = "green"
+  icon = "user"
+  href  = "{{.properties.'account_url'}}"
+}
+
+category "tag" {
+  color = "black"
+  icon = "tag"
+  href  = "{{.properties.'url'}}"
+}
+
+
+

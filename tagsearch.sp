@@ -39,6 +39,8 @@ dashboard "TagSearch" {
 •
 [StatusSearch](${local.host}/mastodon.dashboard.StatusSearch)
 •
+[TagExplore](${local.host}/mastodon.dashboard.TagExplore)
+•
 TagSearch
       EOT
     }

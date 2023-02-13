@@ -39,6 +39,8 @@ PeopleSearch
 •
 [StatusSearch](${local.host}/mastodon.dashboard.StatusSearch)
 •
+[TagExplore](${local.host}/mastodon.dashboard.TagExplore)
+•
 [TagSearch](${local.host}/mastodon.dashboard.TagSearch)
       EOT
     }
