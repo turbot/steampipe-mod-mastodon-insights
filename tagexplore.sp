@@ -46,6 +46,27 @@ TagExplore
     }
   }
 
+  with "mastodon_qualified_account_url" {
+    sql = <<EOQ
+      create or replace function public.mastodon_qualified_account_url(url text) returns text as $$
+        with data as (
+          select
+            (regexp_match(url, 'https://([^/]+)'))[1] as server,
+            (regexp_match(url, '@(.+)$'))[1] as person,
+            ( select name from mastodon_server) as home_server
+        )
+        select
+          case
+            when server != home_server then 'https://elk.zone/mastodon.social/@' || person || '@' || server
+            else 'https://elk.zone/mastodon.social/@' || person
+          end as account_url
+        from
+          data
+      $$ language sql
+    EOQ
+  }
+
+
   container {
 
     table {
@@ -213,26 +234,6 @@ TagExplore
         ) as account_url_and_tag
       from
         feed
-    EOQ
-  }
-
-  with "mastodon_qualified_account_url" as {
-    sql = <<EOQ
-      create or replace function mastodon_qualified_account_url(url text) returns text as $$
-        with data as (
-          select
-            (regexp_match(url, 'https://([^/]+)'))[1] as server,
-            (regexp_match(url, '@(.+)$'))[1] as person,
-            ( select name from mastodon_server) as home_server
-        )
-        select
-          case 
-            when server != home_server then 'https://elk.zone/mastodon.social/@' || person || '@' || server
-            else 'https://elk.zone/mastodon.social/@' || person
-          end as account_url
-        from
-          data
-      $$ language sql
     EOQ
   }
 
