@@ -35,6 +35,7 @@ query "timeline" {
         mastodon_toot
       where
         timeline = $1
+        and url !~ '${local.timeline_exclude}'
       limit $2
     ),
     boosted as (

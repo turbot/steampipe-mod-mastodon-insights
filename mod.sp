@@ -6,5 +6,6 @@ locals {
   host = "http://localhost:9194"
   server = "mastodon.social"
   limit = 100
+  timeline_exclude = "press.coop"
 }
 
