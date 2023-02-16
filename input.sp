@@ -1,6 +1,7 @@
 input "limit" {
   width = 2
   title = "limit"
+  type = "combo"
   sql = <<EOQ
     with limits(label) as (
       values

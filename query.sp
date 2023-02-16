@@ -405,7 +405,7 @@ query "list" {
         and l.list = $1
         and t.reblog -> 'url' is null -- only original posts
         and t.in_reply_to_account_id is null -- only original posts
-        limit ${local.limit}
+        limit 20
     )
     select distinct on (person, day) -- only one per person per day
       day,
