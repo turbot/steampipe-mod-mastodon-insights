@@ -228,23 +228,18 @@ TagExplore
         where
           feed_link = 'https://mastodon.social/tags/' || $1 || '.rss'
         limit $2
-      ),
-      plus_note as (
-        select
-          account_url,
-          tag,
-          (select note from mastodon_search_account where query = account_url) as note
-        from
-          feed
       )
       select distinct on (account_url, tag)
         jsonb_build_object(
           'account_url', account_url,
           'tag', tag,
-          'note', note
+          'note', case
+            when account_url is not null then (select note from mastodon_search_account where query = account_url)
+            else ''
+            end
         ) as account_url_tag_note
       from
-        plus_note
+        feed
     EOQ
   }
 
