@@ -102,16 +102,16 @@ TagExplore
     chart {
       width = 4
       type = "donut"
-      args = [ with.data.rows[*].account_url_and_tag ]
+      args = [ with.data.rows[*].account_url_tag_note ]
       sql = <<EOQ
         with data as (
           select 
-            jsonb_array_elements_text($1::jsonb)::jsonb as account_and_tag
+            jsonb_array_elements_text($1::jsonb)::jsonb as account_url_tag_note
         ),
         unnested as (
           select
-            account_and_tag->>'account_url' as account_url,
-            account_and_tag->>'tag' as tag
+            account_url_tag_note->>'account_url' as account_url,
+            account_url_tag_note->>'tag' as tag
           from
             data
         )
@@ -137,16 +137,17 @@ TagExplore
 
       node {
         category = category.tagger
-        args = [ with.data.rows[*].account_url_and_tag ]
+        args = [ with.data.rows[*].account_url_tag_note ]
         sql = <<EOQ
           with data as (
             select 
-              jsonb_array_elements_text($1::jsonb)::jsonb as account_and_tag
+              jsonb_array_elements_text($1::jsonb)::jsonb as account_url_tag_note
           ),
           unnested as (
             select
-              account_and_tag->>'account_url' as account_url,
-              account_and_tag->>'tag' as tag
+              account_url_tag_note->>'account_url' as account_url,
+              account_url_tag_note->>'tag' as tag,
+              account_url_tag_note->>'note' as note
             from
               data
           )
@@ -154,7 +155,8 @@ TagExplore
             account_url as id,
             regexp_match(account_url, '@.+') as title,
             jsonb_build_object(
-              'account_url', mastodon_qualified_account_url(account_url)
+              'account_url', mastodon_qualified_account_url(account_url),
+              'note', note
             ) as properties
           from
             unnested
@@ -163,16 +165,16 @@ TagExplore
 
       node {
         category = category.tag
-        args = [ with.data.rows[*].account_url_and_tag ]
+        args = [ with.data.rows[*].account_url_tag_note ]
         sql = <<EOQ
           with data as (
             select 
-              jsonb_array_elements_text($1::jsonb)::jsonb as account_and_tag
+              jsonb_array_elements_text($1::jsonb)::jsonb as account_url_tag_note
           ),
           unnested as (
             select
-              account_and_tag->>'account_url' as account_url,
-              account_and_tag->>'tag' as tag
+              account_url_tag_note->>'account_url' as account_url,
+              account_url_tag_note->>'tag' as tag
             from
               data
           )
@@ -189,16 +191,16 @@ TagExplore
       }
 
       edge {
-        args = [ with.data.rows[*].account_url_and_tag ]
+        args = [ with.data.rows[*].account_url_tag_note ]
         sql = <<EOQ
           with data as (
             select 
-              jsonb_array_elements_text($1::jsonb)::jsonb as account_and_tag
+              jsonb_array_elements_text($1::jsonb)::jsonb as account_url_tag_note
           ),
           unnested as (
             select
-              account_and_tag->>'account_url' as account_url,
-              account_and_tag->>'tag' as tag
+              account_url_tag_note->>'account_url' as account_url,
+              account_url_tag_note->>'tag' as tag
             from
               data
           )
@@ -226,14 +228,23 @@ TagExplore
         where
           feed_link = 'https://mastodon.social/tags/' || $1 || '.rss'
         limit $2
+      ),
+      plus_note as (
+        select
+          account_url,
+          tag,
+          (select note from mastodon_search_account where query = account_url) as note
+        from
+          feed
       )
       select distinct on (account_url, tag)
         jsonb_build_object(
           'account_url', account_url,
-          'tag', tag
-        ) as account_url_and_tag
+          'tag', tag,
+          'note', note
+        ) as account_url_tag_note
       from
-        feed
+        plus_note
     EOQ
   }
 
