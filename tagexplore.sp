@@ -217,17 +217,24 @@ TagExplore
   }
 
   with "data" {
-    args = [ self.input.tag.value, self.input.limit.value]    
+    args = [ self.input.tag.value, self.input.limit.value]
     sql = <<EOQ
-      with feed as (
-        select
-          (regexp_match(link, '(.+)/\d+$'))[1] as account_url,
-          jsonb_array_elements_text(categories) as tag
-        from
-          rss_item
-        where
-          feed_link = 'https://mastodon.social/tags/' || $1 || '.rss'
-        limit $2
+      with data as (
+        with feed_link as (  -- this extra cte level should not be necessary
+          select 'https://' || ( select name from mastodon_server ) || '/tags/' || $1 || '.rss' as feed_link
+        )
+        select feed_link from feed_link
+      ),
+      feed as (
+          select
+            (regexp_match(link, '(.+)/\d+$'))[1] as account_url,
+            jsonb_array_elements_text(categories) as tag
+          from
+            rss_item r
+          join
+            data d
+          using (feed_link)
+          limit $2
       )
       select distinct on (account_url, tag)
         jsonb_build_object(
