@@ -10,6 +10,22 @@ category "selected_server" {
   href  = "https://{{.properties.'server'}}"
 }
 
+category "blocked_server" {
+  color = "darkred"
+  icon = "server"
+}
+
+category "blocking_server" {
+  color = "darkgreen"
+  icon = "server"
+}
+
+category "blocked_and_blocking_server" {
+  color = "orange"
+  icon = "server"
+}
+
+
 category "boosted_server" {
   color = "brown"
   icon = "server"
