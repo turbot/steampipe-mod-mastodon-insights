@@ -105,7 +105,7 @@ TagExplore
       args = [ with.data.rows[*].account_url_tag_note ]
       sql = <<EOQ
         with data as (
-          select 
+          select
             jsonb_array_elements_text($1::jsonb)::jsonb as account_url_tag_note
         ),
         unnested as (
@@ -120,19 +120,19 @@ TagExplore
           count(*)
         from
           unnested
-        group by 
+        group by
           tag
         order by
           count desc
 
-      EOQ      
+      EOQ
     }
 
 
   }
 
   container {
-    
+
     graph {
 
       node {
@@ -140,7 +140,7 @@ TagExplore
         args = [ with.data.rows[*].account_url_tag_note ]
         sql = <<EOQ
           with data as (
-            select 
+            select
               jsonb_array_elements_text($1::jsonb)::jsonb as account_url_tag_note
           ),
           unnested as (
@@ -168,7 +168,7 @@ TagExplore
         args = [ with.data.rows[*].account_url_tag_note ]
         sql = <<EOQ
           with data as (
-            select 
+            select
               jsonb_array_elements_text($1::jsonb)::jsonb as account_url_tag_note
           ),
           unnested as (
@@ -194,7 +194,7 @@ TagExplore
         args = [ with.data.rows[*].account_url_tag_note ]
         sql = <<EOQ
           with data as (
-            select 
+            select
               jsonb_array_elements_text($1::jsonb)::jsonb as account_url_tag_note
           ),
           unnested as (
