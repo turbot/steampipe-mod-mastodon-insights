@@ -57,8 +57,8 @@ TagExplore
         )
         select
           case
-            when server != home_server then 'https://elk.zone/mastodon.social/@' || person || '@' || server
-            else 'https://elk.zone/mastodon.social/@' || person
+            when server != home_server then 'https://elk.zone/' || home_server || '/@' || person || '@' || server
+            else 'https://elk.zone/' || home_server || '/@' || person
           end as account_url
         from
           data
