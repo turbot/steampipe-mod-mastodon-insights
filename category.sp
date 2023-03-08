@@ -13,16 +13,19 @@ category "selected_server" {
 category "blocked_server" {
   color = "darkred"
   icon = "server"
+  href  = "https://{{.properties.'link_to'}}"
 }
 
 category "blocking_server" {
   color = "darkgreen"
   icon = "server"
+  href  = "https://{{.properties.'link_to'}}"
 }
 
 category "blocked_and_blocking_server" {
   color = "orange"
   icon = "server"
+  href  = "https://{{.properties.'link_to'}}"
 }
 
 

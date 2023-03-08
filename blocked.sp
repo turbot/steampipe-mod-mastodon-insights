@@ -203,7 +203,6 @@ Blocked
           base = edge.match_blocking_server
         }
 
-
       }
 
       table {
@@ -211,7 +210,7 @@ Blocked
         sql = <<EOQ
           select
             'https://' || blocked_server as blocked_server,
-            (  select count(*) from blocked_servers(100) where blocked_server = bs.blocked_server) as blocking_servers,
+            (  select count(*) from blocked_servers(${local.limit}) where blocked_server = bs.blocked_server) as blocking_servers,
             '${local.host}/mastodon.dashboard.Blocked?input.blocked_server=' || blocked_server as graph_link
           from
             blocking_servers(${local.limit}) bs
@@ -271,7 +270,7 @@ Blocked
         sql = <<EOQ
           select
             blocking_server,
-            ( select count(*) from blocked_servers(100) where blocking_server = bs.blocking_server ) as blocked_servers,
+            ( select count(*) from blocked_servers(${local.limit}) where blocking_server = bs.blocking_server ) as blocked_servers,
             '${local.host}/mastodon.dashboard.Blocked?input.blocking_server=' || blocking_server as graph_link
           from
             blocking_servers(${local.limit}) bs
@@ -322,7 +321,12 @@ node "blocking_server" {
     )
     select
       blocking_server as id,
-      blocking_server as title
+      blocking_server as title,
+      jsonb_build_object(
+        'blocked_server', blocked_server,
+        'blocking_server', blocking_server,
+        'link_to', blocking_server
+      ) as properties
     from
       servers
     order by
@@ -344,7 +348,12 @@ node "blocked_server" {
     )
     select
       blocked_server as id,
-      blocked_server as title
+      blocked_server as title,
+      jsonb_build_object(
+        'blocked_server', blocked_server,
+        'blocking_server', blocking_server,
+        'link_to', blocked_server
+      ) as properties
     from
       servers
     order by
@@ -367,7 +376,8 @@ node "blocked_and_blocking_server" {
       blocked_server as title,
       jsonb_build_object(
         'blocked_server', blocked_server,
-        'blocking_server', blocking_server
+        'blocking_server', blocking_server,
+        'link_to', blocked_server
       ) as properties
     from
       servers
