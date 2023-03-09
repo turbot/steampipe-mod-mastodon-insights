@@ -6,43 +6,15 @@ dashboard "Me" {
 
   container {
     text {
-      value = <<EOT
-[Blocked](${local.host}/mastodon.dashboard.Blocked)
-•
-[Direct](${local.host}/mastodon.dashboard.Direct)
-•
-[Favorites](${local.host}/mastodon.dashboard.Favorites)
-•
-[Followers](${local.host}/mastodon.dashboard.Followers)
-•
-[Following](${local.host}/mastodon.dashboard.Following)
-•
-[Home](${local.host}/mastodon.dashboard.Home)
-•
-[List](${local.host}/mastodon.dashboard.List)
-•
-[Local](${local.host}/mastodon.dashboard.Local)
-•
-Me
-•
-[Notification](${local.host}/mastodon.dashboard.Notification)
-•
-[PeopleSearch](${local.host}/mastodon.dashboard.PeopleSearch)
-•
-[Rate](${local.host}/mastodon.dashboard.Rate)
-•
-[Relationships](${local.host}/mastodon.dashboard.Relationships)
-•
-[Remote](${local.host}/mastodon.dashboard.Remote)
-•
-[Server](${local.host}/mastodon.dashboard.Server)
-•
-[StatusSearch](${local.host}/mastodon.dashboard.StatusSearch)
-•
-[TagExplore](${local.host}/mastodon.dashboard.TagExplore)
-•
-[TagSearch](${local.host}/mastodon.dashboard.TagSearch)
-      EOT
+      value = replace(
+        replace(
+          "${local.menu}",
+          "__HOST__",
+          "${local.host}"
+        ),
+        "[Me](${local.host}/mastodon.dashboard.Me)",
+        "Me"
+      )
     }
   }
 
@@ -70,9 +42,7 @@ Me
           select
             to_char(created_at, 'YY-MM-DD') as day
           from
-            mastodon_toot
-          where
-            timeline = 'me'
+            mastodon_my_toot
           limit $1
         )
         select
@@ -101,9 +71,7 @@ Me
               else 'original'
             end as type
           from
-            mastodon_toot
-          where
-            timeline = 'me'
+            mastodon_my_toot
           limit $1
         )
         select
@@ -123,8 +91,8 @@ Me
   container {
 
     table {
-      args = [ self.input.limit.value ]
-      query = query.my_toots
+      args = [ self.input.limit.value, "include" ]
+      query = query.timeline_me
       column "toot" {
         wrap = "all"
       }

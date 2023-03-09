@@ -28,10 +28,9 @@ input "server" {
       select
         server
       from
-        mastodon_toot
+        mastodon_toot_home
       where
-        timeline = 'home'
-        and reblog_server is not null
+        reblog_server is not null
       limit ${local.limit}
     ),
     counts as (

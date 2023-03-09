@@ -6,43 +6,15 @@ dashboard "Direct" {
 
   container {
     text {
-      value = <<EOT
-[Blocked](${local.host}/mastodon.dashboard.Blocked)
-•
-Direct
-•
-[Favorites](${local.host}/mastodon.dashboard.Favorites)
-•
-[Followers](${local.host}/mastodon.dashboard.Followers)
-•
-[Following](${local.host}/mastodon.dashboard.Following)
-•
-[Home](${local.host}/mastodon.dashboard.Home)
-•
-[List](${local.host}/mastodon.dashboard.List)
-•
-[Local](${local.host}/mastodon.dashboard.Local)
-•
-[Me](${local.host}/mastodon.dashboard.Me)
-•
-[Notification](${local.host}/mastodon.dashboard.Notification)
-•
-[PeopleSearch](${local.host}/mastodon.dashboard.PeopleSearch)
-•
-[Rate](${local.host}/mastodon.dashboard.Rate)
-•
-[Relationships](${local.host}/mastodon.dashboard.Relationships)
-•
-[Remote](${local.host}/mastodon.dashboard.Remote)
-•
-[Server](${local.host}/mastodon.dashboard.Server)
-•
-[StatusSearch](${local.host}/mastodon.dashboard.StatusSearch)
-•
-[TagExplore](${local.host}/mastodon.dashboard.TagExplore)
-•
-[TagSearch](${local.host}/mastodon.dashboard.TagSearch)
-      EOT
+      value = replace(
+        replace(
+          "${local.menu}",
+          "__HOST__",
+          "${local.host}"
+        ),
+        "[Direct](${local.host}/mastodon.dashboard.Direct)",
+        "Direct"
+      )
     }
   }
 
@@ -63,8 +35,8 @@ Direct
 
     table {
       title = "direct: recent toots"
-      query = query.timeline
-      args = [ "direct", self.input.limit.value, "n/a" ]
+       query = query.timeline_direct
+      args = [ self.input.limit.value, "n/a" ]
       column "person" {
         wrap = "all"
       }

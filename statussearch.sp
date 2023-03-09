@@ -6,43 +6,15 @@ dashboard "StatusSearch" {
 
   container {
     text {
-      value = <<EOT
-[Blocked](${local.host}/mastodon.dashboard.Blocked)
-•
-[Direct](${local.host}/mastodon.dashboard.Direct)
-•
-[Favorites](${local.host}/mastodon.dashboard.Favorites)
-•
-[Followers](${local.host}/mastodon.dashboard.Followers)
-•
-[Following](${local.host}/mastodon.dashboard.Following)
-•
-[List](${local.host}/mastodon.dashboard.List)
-•
-[Home](${local.host}/mastodon.dashboard.Home)
-•
-[Local](${local.host}/mastodon.dashboard.Local)
-•
-[Me](${local.host}/mastodon.dashboard.Me)
-•
-[Notification](${local.host}/mastodon.dashboard.Notification)
-•
-[PeopleSearch](${local.host}/mastodon.dashboard.PeopleSearch)
-•
-[Rate](${local.host}/mastodon.dashboard.Rate)
-•
-[Relationships](${local.host}/mastodon.dashboard.Relationships)
-•
-[Remote](${local.host}/mastodon.dashboard.Remote)
-•
-[Server](${local.host}/mastodon.dashboard.Server)
-•
-StatusSearch
-•
-[TagExplore](${local.host}/mastodon.dashboard.TagExplore)
-•
-[TagSearch](${local.host}/mastodon.dashboard.TagSearch)
-      EOT
+      value = replace(
+        replace(
+          "${local.menu}",
+          "__HOST__",
+          "${local.host}"
+        ),
+        "[StatusSearch](${local.host}/mastodon.dashboard.StatusSearch)",
+        "StatusSearch"
+      )
     }
   }
 
@@ -64,8 +36,8 @@ StatusSearch
   container {
 
     table {
-      args = [ self.input.search_term.value ]
-      query = query.search_status
+      args = [ local.limit, "n/a", self.input.search_term.value ]
+      query = query.search_toot
       column "toot" {
         wrap = "all"
       }

@@ -6,43 +6,15 @@ dashboard "Followers" {
 
   container {
     text {
-      value = <<EOT
-[Blocked](${local.host}/mastodon.dashboard.Blocked)
-•
-[Direct](${local.host}/mastodon.dashboard.Direct)
-•
-[Favorites](${local.host}/mastodon.dashboard.Favorites)
-•
-Followers
-•
-[Following](${local.host}/mastodon.dashboard.Following)
-•
-[Home](${local.host}/mastodon.dashboard.Home)
-•
-[List](${local.host}/mastodon.dashboard.List)
-•
-[Local](${local.host}/mastodon.dashboard.Local)
-•
-[Me](${local.host}/mastodon.dashboard.Me)
-•
-[Notification](${local.host}/mastodon.dashboard.Notification)
-•
-[PeopleSearch](${local.host}/mastodon.dashboard.PeopleSearch)
-•
-[Rate](${local.host}/mastodon.dashboard.Rate)
-•
-[Relationships](${local.host}/mastodon.dashboard.Relationships)
-•
-[Remote](${local.host}/mastodon.dashboard.Remote)
-•
-[Server](${local.host}/mastodon.dashboard.Server)
-•
-[StatusSearch](${local.host}/mastodon.dashboard.StatusSearch)
-•
-[TagExplore](${local.host}/mastodon.dashboard.TagExplore)
-•
-[TagSearch](${local.host}/mastodon.dashboard.TagSearch)
-      EOT
+      value = replace(
+        replace(
+          "${local.menu}",
+          "__HOST__",
+          "${local.host}"
+        ),
+        "[Followers](${local.host}/mastodon.dashboard.Followers)",
+        "Followers"
+      )
     }
   }
 
@@ -55,7 +27,7 @@ Followers
 
     card {
       width = 2
-      sql = "select count(*) as followers from mastodon_followers"
+      sql = "select count(*) as followers from mastodon_my_follower"
     }
 
   }
@@ -70,7 +42,7 @@ Followers
           to_char(created_at, 'YYYY-MM') as month,
           count(*)
         from
-          mastodon_followers
+          mastodon_my_follower
         group by
           month
       EOQ
@@ -85,7 +57,7 @@ Followers
           select
             (regexp_match(acct, '@(.+)'))[1] as domain
           from
-            mastodon_followers
+            mastodon_my_follower
         )
         select
           case

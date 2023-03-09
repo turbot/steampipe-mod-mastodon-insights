@@ -6,43 +6,15 @@ dashboard "Favorites" {
 
   container {
     text {
-      value = <<EOT
-[Blocked](${local.host}/mastodon.dashboard.Blocked)
-•
-[Direct](${local.host}/mastodon.dashboard.Direct)
-•
-Favorites
-•
-[Followers](${local.host}/mastodon.dashboard.Followers)
-•
-[Following](${local.host}/mastodon.dashboard.Following)
-•
-[Home](${local.host}/mastodon.dashboard.Home)
-•
-[List](${local.host}/mastodon.dashboard.List)
-•
-[Local](${local.host}/mastodon.dashboard.Local)
-•
-[Me](${local.host}/mastodon.dashboard.Me)
-•
-[Notification](${local.host}/mastodon.dashboard.Notification)
-•
-[PeopleSearch](${local.host}/mastodon.dashboard.PeopleSearch)
-•
-[Rate](${local.host}/mastodon.dashboard.Rate)
-•
-[Relationships](${local.host}/mastodon.dashboard.Relationships)
-•
-[Remote](${local.host}/mastodon.dashboard.Remote)
-•
-[Server](${local.host}/mastodon.dashboard.Server)
-•
-[StatusSearch](${local.host}/mastodon.dashboard.StatusSearch)
-•
-[TagExplore](${local.host}/mastodon.dashboard.TagExplore)
-•
-[TagSearch](${local.host}/mastodon.dashboard.TagSearch)
-      EOT
+      value = replace(
+        replace(
+          "${local.menu}",
+          "__HOST__",
+          "${local.host}"
+        ),
+        "[Favorites](${local.host}/mastodon.dashboard.Favorites)",
+        "Favorites"
+      )
     }
   }
 
@@ -70,7 +42,7 @@ Favorites
           to_char(created_at, 'YY-MM-DD') as day,
           count(*)
         from
-          mastodon_favorite
+          mastodon_toot_favourite
         group by
           day
         limit $1
@@ -87,7 +59,7 @@ Favorites
           select
             case when display_name = '' then username else display_name end as person
           from
-            mastodon_favorite
+            mastodon_toot_favourite
           limit $1
           )
         select
@@ -109,9 +81,9 @@ Favorites
   container {
 
     table {
-      args = [ self.input.limit.value ]
+      args = [ self.input.limit.value, "n/a" ]
       title = "favorites"
-      query = query.favorite
+      query = query.timeline_favourite
       column "person" {
         wrap = "all"
       }

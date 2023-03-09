@@ -6,43 +6,15 @@ dashboard "Relationships" {
 
   container {
     text {
-      value = <<EOT
-[Blocked](${local.host}/mastodon.dashboard.Blocked)
-•
-[Direct](${local.host}/mastodon.dashboard.Direct)
-•
-[Favorites](${local.host}/mastodon.dashboard.Favorites)
-•
-[Followers](${local.host}/mastodon.dashboard.Followers)
-•
-[Following](${local.host}/mastodon.dashboard.Following)
-•
-[Home](${local.host}/mastodon.dashboard.Home)
-•
-[List](${local.host}/mastodon.dashboard.List)
-•
-[Local](${local.host}/mastodon.dashboard.Local)
-•
-[Me](${local.host}/mastodon.dashboard.Me)
-•
-[Notification](${local.host}/mastodon.dashboard.Notification)
-•
-[PeopleSearch](${local.host}/mastodon.dashboard.PeopleSearch)
-•
-[Rate](${local.host}/mastodon.dashboard.Rate)
-•
-Relationships
-•
-[Remote](${local.host}/mastodon.dashboard.Remote)
-•
-[Server](${local.host}/mastodon.dashboard.Server)
-•
-[StatusSearch](${local.host}/mastodon.dashboard.StatusSearch)
-•
-[TagExplore](${local.host}/mastodon.dashboard.TagExplore)
-•
-[TagSearch](${local.host}/mastodon.dashboard.TagSearch)
-      EOT
+      value = replace(
+        replace(
+          "${local.menu}",
+          "__HOST__",
+          "${local.host}"
+        ),
+        "[Relationship](${local.host}/mastodon.dashboard.Relationship)",
+        "Relationship"
+      )
     }
   }
 
@@ -71,10 +43,9 @@ Relationships
                 'reblog_server', reblog_server
               ) as properties
             from
-              mastodon_toot
+              mastodon_toot_home
             where
-              timeline = 'home'
-              and reblog_server is not null
+              reblog_server is not null
               and server = $1
             limit ${local.limit}
           EOQ
@@ -94,10 +65,9 @@ Relationships
                 'reblog_server', reblog_server
               ) as properties
             from
-              mastodon_toot
+              mastodon_toot_home
             where
-              timeline = 'home'
-              and reblog_server is not null
+              reblog_server is not null
               and server = $1
             limit ${local.limit}
           EOQ
@@ -116,10 +86,9 @@ Relationships
                 'instance_qualified_account_url', instance_qualified_account_url
               ) as properties
             from
-              mastodon_toot
+              mastodon_toot_home
             where
-              timeline = 'home'
-              and reblog_server is not null
+              reblog_server is not null
               and server = $1
             limit ${local.limit}
           EOQ
@@ -139,10 +108,9 @@ Relationships
                 'content', reblog_content
               ) as properties
             from
-              mastodon_toot
+              mastodon_toot_home
             where
-              timeline = 'home'
-              and reblog_server is not null
+              reblog_server is not null
               and server = $1
             limit ${local.limit}
           EOQ
@@ -161,10 +129,9 @@ Relationships
                 'reblog_server', reblog_server
             ) as properties
             from
-              mastodon_toot
+              mastodon_toot_home
             where
-              timeline = 'home'
-              and reblog_server is not null
+              reblog_server is not null
             limit ${local.limit}
           EOQ
         }
@@ -177,10 +144,9 @@ Relationships
               reblog_server as to_id,
               'belongs to' as title
             from
-              mastodon_toot
+              mastodon_toot_home
             where
-              timeline = 'home'
-              and reblog_server is not null
+              reblog_server is not null
               and server = $1
             limit ${local.limit}
           EOQ
@@ -200,13 +166,12 @@ Relationships
                 'content', reblog_content
               ) as properties
             from
-              mastodon_toot
+              mastodon_toot_home
             where
-              timeline = 'home'
-              and reblog_server is not null
+              reblog_server is not null
               and server = $1
             limit ${local.limit}
-          EOQ
+            EOQ
         }
 
       }
@@ -231,10 +196,9 @@ Relationships
                 'reblog_server', reblog_server
               ) as properties
             from
-              mastodon_toot
+              mastodon_toot_home
             where
-              timeline = 'home'
-              and reblog_server is not null
+              reblog_server is not null
             limit ${local.limit}
           EOQ
         }
@@ -250,10 +214,9 @@ Relationships
                 'reblog_server', reblog_server
               ) as properties
             from
-              mastodon_toot
+              mastodon_toot_home
             where
-              timeline = 'home'
-              and reblog_server is not null
+              reblog_server is not null
             limit ${local.limit}
           EOQ
         }
@@ -266,10 +229,9 @@ Relationships
               reblog_server as to_id,
               'boosts' as title
             from
-              mastodon_toot
+              mastodon_toot_home
             where
-              timeline = 'home'
-              and reblog_server is not null
+              reblog_server is not null
             limit ${local.limit}
           EOQ
         }

@@ -51,13 +51,11 @@ Blocked
         blocked_server text
       ) as $$
       with servers as (
-        select distinct
+        select
           server as domain,
           'https://' || server as server_url
         from
-          mastodon_toot
-        where
-          timeline = 'home'
+          mastodon_toot_home
         limit max
       ),
       blocking_and_blocked as (
@@ -89,18 +87,16 @@ Blocked
         blocking_server text
       ) as $$
       with servers as (
-        select distinct
+        select
           server as domain,
           'https://' || server as server
         from
-          mastodon_toot
-        where
-          timeline = 'home'
+          mastodon_toot_home
         limit max
       )
-      select
-        d.domain,
-        s.domain
+      select distinct
+        d.domain as blocked_domain,
+        s.domain as blocking_domain
       from
         servers s
       join
@@ -108,7 +104,7 @@ Blocked
       on
         s.server = d.server
       order by
-        d.domain, s.domain
+        blocked_domain, blocking_domain
       $$ language sql
     EOQ
   }
@@ -153,9 +149,7 @@ Blocked
               server as domain,
               'https://' || server as server_url
             from
-              mastodon_toot
-            where
-              timeline = 'home'
+              mastodon_toot_home
             limit ${local.limit}
           ),
           blocking_and_blocked as (
