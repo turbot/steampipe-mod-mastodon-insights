@@ -25,7 +25,7 @@ dashboard "Blocked" {
         blocked_server text
       ) as $$
       with servers as (
-        select
+        select distinct
           server as domain,
           'https://' || server as server_url
         from
@@ -33,7 +33,7 @@ dashboard "Blocked" {
         limit max
       ),
       blocking_and_blocked as (
-        select
+        select distinct
           s.domain as blocking_domain,
           d.domain as blocked_domain
         from
