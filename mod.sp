@@ -10,6 +10,10 @@ locals {
   menu = <<EOT
 [Blocked](__HOST__/mastodon.dashboard.Blocked)
 •
+[BoostsFromServer](__HOST__/mastodon.dashboard.BoostsFromServer)
+•
+[BoostsFederated](__HOST__/mastodon.dashboard.BoostsFederated)
+•
 [Direct](__HOST__/mastodon.dashboard.Direct)
 •
 [Favorites](__HOST__/mastodon.dashboard.Favorites)
