@@ -94,9 +94,9 @@ locals {
         f.instance_qualified_account_url,
         case when f.display_name = '' then f.username else f.display_name end as person,
         to_char(f.created_at, 'YYYY-MM-DD') as since,
-        f.followers_count as followers,
-        f.following_count as following,
-        f.statuses_count as toots,
+        '↶ ' || f.followers_count as followers,
+        '↷ ' || f.following_count as following,
+        '🎺 ' || f.statuses_count as toots,
         f.note
       from
         __TABLE__ f
