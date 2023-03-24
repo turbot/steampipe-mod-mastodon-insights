@@ -306,7 +306,7 @@ query "list" {
         l.id = t.list_id
       where
         l.list = $1
-        and t.reblog -> 'url' is null -- only original posts
+        and t.reblog is null -- only original posts
         and t.in_reply_to_account_id is null -- only original posts
         limit 20
     )
