@@ -36,8 +36,6 @@ locals {
 •
 [Rate](__HOST__/mastodon.dashboard.Rate)
 •
-[Relationships](__HOST__/mastodon.dashboard.Relationships)
-•
 [Remote](__HOST__/mastodon.dashboard.Remote)
 •
 [Server](__HOST__/mastodon.dashboard.Server)
