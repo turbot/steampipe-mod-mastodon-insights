@@ -94,9 +94,9 @@ locals {
         f.instance_qualified_account_url,
         case when f.display_name = '' then f.username else f.display_name end as person,
         to_char(f.created_at, 'YYYY-MM-DD') as since,
-        f.followers_count as followers,
-        f.following_count as following,
-        f.statuses_count as toots,
+        '↶ ' || f.followers_count as followers,
+        '↷ ' || f.following_count as following,
+        '🎺 ' || f.statuses_count as toots,
         f.note
       from
         __TABLE__ f
@@ -223,21 +223,15 @@ query "search_people" {
       limit ${local.limit}
     )
     select
-      d.instance_qualified_account_url,
-      d.person,
-      case when r.following then '✔️' else '' end as i_follow,
-      case when r.followed_by then '✔️' else '' end as follows_me,
-      d.created_at,
-      d.followers_count as followers,
-      d.following_count as following,
-      d.toots,
-      d.note
+      instance_qualified_account_url,
+      person,
+      created_at,
+        '↶ ' || followers_count as followers,
+        '↷ ' || following_count as following,
+      toots,
+      note
     from
       data d
-    join
-      mastodon_relationship r
-    on
-      d.id = r.id
   EOQ
   param "search_term" {}
 }
@@ -270,8 +264,8 @@ query "notification" {
       n.category,
       n.person,
       n.instance_qualified_account_url as account_url,
-      case when r.following then '✔️' else '' end as following,
-      case when r.followed_by then '✔️' else '' end as followed_by,
+      case when r.following then '↶ ' else '' end as following,
+      case when r.followed_by then '↷ ' else '' end as followed_by,
       substring(n.status_content from 1 for 200) as toot,
       case
         when n.instance_qualified_status_url != '' then n.instance_qualified_status_url
@@ -312,7 +306,7 @@ query "list" {
         l.id = t.list_id
       where
         l.list = $1
-        and t.reblog -> 'url' is null -- only original posts
+        and t.reblog is null -- only original posts
         and t.in_reply_to_account_id is null -- only original posts
         limit 20
     )
