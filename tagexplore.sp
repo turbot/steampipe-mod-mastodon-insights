@@ -18,6 +18,53 @@ dashboard "TagExplore" {
     }
   }
 
+  with "mastodon_tag_data" {
+    sql = <<EOQ
+      create or replace function mastodon_tag_data(tag text, max int) returns table (
+        account_url text,
+        username text,
+        server text,
+        tag text,
+        note text
+      ) as $$
+      with data as (
+        with feed_link as (  -- this extra cte level should not be necessary
+          select 'https://' || ( select name from mastodon_server ) || '/tags/' || $1 || '.rss' as feed_link
+        )
+        select feed_link from feed_link
+      ),
+      feed as (
+        select
+          (regexp_match(link, '(.+)/\d+$'))[1] as account_url,
+          jsonb_array_elements_text(categories) as tag
+        from
+          rss_item r
+        join
+          data d
+        using (feed_link)
+        limit $2
+      ),
+      partial as (
+        select distinct on (account_url, tag)
+          account_url,
+          (regexp_match(account_url, '@(.+)'))[1] as account_username,
+          (regexp_match('https://mastodon.social/@judell', 'https://(.+)/'))[1] as account_server,
+          tag
+        from
+          feed
+      )
+      select
+        *,
+        case
+          when account_url is not null then (select note from mastodon_search_account where query = account_username and server = account_server)
+          else ''
+        end
+      from
+        partial
+      $$ language sql
+    EOQ
+  }
+
   with "mastodon_qualified_account_url" {
     sql = <<EOQ
       create or replace function public.mastodon_qualified_account_url(url text) returns text as $$
@@ -74,32 +121,19 @@ dashboard "TagExplore" {
     chart {
       width = 4
       type = "donut"
-      args = [ with.data.rows[*].account_url_tag_note ]
+      args = [ self.input.tag.value, self.input.limit.value]
       sql = <<EOQ
-        with data as (
-          select
-            jsonb_array_elements_text($1::jsonb)::jsonb as account_url_tag_note
-        ),
-        unnested as (
-          select
-            account_url_tag_note->>'account_url' as account_url,
-            account_url_tag_note->>'tag' as tag
-          from
-            data
-        )
         select
           tag,
           count(*)
         from
-          unnested
+          mastodon_tag_data($1, $2)
         group by
           tag
         order by
           count desc
-
       EOQ
     }
-
 
   }
 
@@ -109,20 +143,8 @@ dashboard "TagExplore" {
 
       node {
         category = category.tagger
-        args = [ with.data.rows[*].account_url_tag_note ]
+        args = [ self.input.tag.value, self.input.limit.value]
         sql = <<EOQ
-          with data as (
-            select
-              jsonb_array_elements_text($1::jsonb)::jsonb as account_url_tag_note
-          ),
-          unnested as (
-            select
-              account_url_tag_note->>'account_url' as account_url,
-              account_url_tag_note->>'tag' as tag,
-              account_url_tag_note->>'note' as note
-            from
-              data
-          )
           select
             account_url as id,
             regexp_match(account_url, '@.+') as title,
@@ -131,25 +153,14 @@ dashboard "TagExplore" {
               'note', note
             ) as properties
           from
-            unnested
+            mastodon_tag_data($1, $2)
         EOQ
       }
 
       node {
         category = category.tag
-        args = [ with.data.rows[*].account_url_tag_note ]
+        args = [ self.input.tag.value, self.input.limit.value]        
         sql = <<EOQ
-          with data as (
-            select
-              jsonb_array_elements_text($1::jsonb)::jsonb as account_url_tag_note
-          ),
-          unnested as (
-            select
-              account_url_tag_note->>'account_url' as account_url,
-              account_url_tag_note->>'tag' as tag
-            from
-              data
-          )
           select
             tag as id,
             tag as title,
@@ -158,29 +169,18 @@ dashboard "TagExplore" {
               'url', '${local.host}/mastodon.dashboard.TagExplore?input.tag=' || tag
             ) as properties
           from
-            unnested
+            mastodon_tag_data($1, $2)
         EOQ
       }
 
       edge {
-        args = [ with.data.rows[*].account_url_tag_note ]
+        args = [ self.input.tag.value, self.input.limit.value]        
         sql = <<EOQ
-          with data as (
-            select
-              jsonb_array_elements_text($1::jsonb)::jsonb as account_url_tag_note
-          ),
-          unnested as (
-            select
-              account_url_tag_note->>'account_url' as account_url,
-              account_url_tag_note->>'tag' as tag
-            from
-              data
-          )
           select
             account_url as from_id,
             tag as to_id
           from
-            unnested
+            mastodon_tag_data($1, $2)
         EOQ
       }
 
@@ -188,39 +188,6 @@ dashboard "TagExplore" {
 
   }
 
-  with "data" {
-    args = [ self.input.tag.value, self.input.limit.value]
-    sql = <<EOQ
-      with data as (
-        with feed_link as (  -- this extra cte level should not be necessary
-          select 'https://' || ( select name from mastodon_server ) || '/tags/' || $1 || '.rss' as feed_link
-        )
-        select feed_link from feed_link
-      ),
-      feed as (
-          select
-            (regexp_match(link, '(.+)/\d+$'))[1] as account_url,
-            jsonb_array_elements_text(categories) as tag
-          from
-            rss_item r
-          join
-            data d
-          using (feed_link)
-          limit $2
-      )
-      select distinct on (account_url, tag)
-        jsonb_build_object(
-          'account_url', account_url,
-          'tag', tag,
-          'note', case
-            when account_url is not null then (select note from mastodon_search_account where query = account_url)
-            else ''
-            end
-        ) as account_url_tag_note
-      from
-        feed
-    EOQ
-  }
 
 }
 
