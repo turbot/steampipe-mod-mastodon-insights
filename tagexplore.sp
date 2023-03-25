@@ -22,8 +22,6 @@ dashboard "TagExplore" {
     sql = <<EOQ
       create or replace function mastodon_tag_data(tag text, max int) returns table (
         account_url text,
-        username text,
-        server text,
         tag text
       ) as $$
       with data as (
@@ -45,8 +43,6 @@ dashboard "TagExplore" {
       )
       select distinct on (account_url, tag)
         account_url,
-        (regexp_match(account_url, '@(.+)'))[1] as account_username,
-        (regexp_match('https://mastodon.social/@judell', 'https://(.+)/'))[1] as account_server,
         tag
       from
         feed
