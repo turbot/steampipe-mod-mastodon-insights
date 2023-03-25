@@ -24,8 +24,7 @@ dashboard "TagExplore" {
         account_url text,
         username text,
         server text,
-        tag text,
-        note text
+        tag text
       ) as $$
       with data as (
         with feed_link as (  -- this extra cte level should not be necessary
@@ -43,24 +42,14 @@ dashboard "TagExplore" {
           data d
         using (feed_link)
         limit $2
-      ),
-      partial as (
-        select distinct on (account_url, tag)
-          account_url,
-          (regexp_match(account_url, '@(.+)'))[1] as account_username,
-          (regexp_match('https://mastodon.social/@judell', 'https://(.+)/'))[1] as account_server,
-          tag
-        from
-          feed
       )
-      select
-        *,
-        case
-          when account_url is not null then (select note from mastodon_search_account where query = account_username and server = account_server)
-          else ''
-        end
+      select distinct on (account_url, tag)
+        account_url,
+        (regexp_match(account_url, '@(.+)'))[1] as account_username,
+        (regexp_match('https://mastodon.social/@judell', 'https://(.+)/'))[1] as account_server,
+        tag
       from
-        partial
+        feed
       $$ language sql
     EOQ
   }
@@ -149,8 +138,7 @@ dashboard "TagExplore" {
             account_url as id,
             regexp_match(account_url, '@.+') as title,
             jsonb_build_object(
-              'account_url', mastodon_qualified_account_url(account_url),
-              'note', note
+              'account_url', mastodon_qualified_account_url(account_url)
             ) as properties
           from
             mastodon_tag_data($1, $2)
