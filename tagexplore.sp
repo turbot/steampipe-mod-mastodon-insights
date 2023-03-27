@@ -20,7 +20,7 @@ dashboard "TagExplore" {
 
   with "mastodon_tag_data" {
     sql = <<EOQ
-      create or replace function mastodon_tag_data(tag text, max int) returns table (
+      create or replace function public.mastodon_tag_data(tag text, max int) returns table (
         account_url text,
         tag text
       ) as $$

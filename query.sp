@@ -180,7 +180,7 @@ query "search_hashtag" {
         query = $1
         and name = query
       limit 1
-    )
+9    )
     select
       to_char(r.published, 'YYYY-MM-DD') as published,
       d.name as tag,
