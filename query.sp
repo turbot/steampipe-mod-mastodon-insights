@@ -16,7 +16,7 @@ locals {
           else ' '
         end as boosted,
         case
-          when in_reply_to_account_id is not null then ' → ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
+          when in_reply_to_account_id is not null then ' → ' || (regexp_match(content, '@\w+'))[1]
           else ''
         end as in_reply_to,
         case
