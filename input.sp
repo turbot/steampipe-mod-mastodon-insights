@@ -6,7 +6,7 @@ input "limit" {
     with limits(label) as (
       values
         ( '20' ),
-        ( '50' ),
+        ( '40' ),
         ( '100' ),
         ( '200' ),
         ( '500' ),
