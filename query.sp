@@ -16,7 +16,7 @@ locals {
           else ' '
         end as boosted,
         case
-          when in_reply_to_account_id is not null then ' → ' || (regexp_match(content, '@\w+'))[1]
+          when in_reply_to_account_id is not null then ' → ' 
           else ''
         end as in_reply_to,
         case
