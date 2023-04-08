@@ -41,7 +41,6 @@ Install the RSS plugin (which [augments](https://blog.jonudell.net/2022/12/06/ma
 steampipe plugin install rss
 ```
 
-
 Install and configure the [Mastodon plugin](https://github.com/turbot/steampipe-plugin-mastodon).
 
 Clone:
@@ -50,6 +49,18 @@ Clone:
 git clone https://github.com/turbot/steampipe-mod-mastodon-insights
 cd steampipe-mod-mastodon-insights
 ```
+
+Tweak:
+
+Edit `mod.sp` like so:
+
+```
+locals {
+  host = "http://localhost:9194"
+  server = "social.coop" // replace with your server
+  ...
+}
+
 
 ### Usage
 
